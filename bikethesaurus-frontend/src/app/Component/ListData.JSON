@@ -1,0 +1,25 @@
+[{
+    "id":1,
+    "model": "Trek V1 Model",
+    "manual": "Trek V1 Manual"
+},
+{
+    "id":2,
+    "model": "Giant Escape 3",
+    "manual": "Giant Escape Manual"
+},
+{
+    "id":3,
+    "model": "Specialized Allez",
+    "manual": "Specialized Allez Manual"
+},
+{
+    "id":4,
+    "model": "Cannondale Quick 4",
+    "manual": "Cannondale Quick Manual"
+},
+{
+    "id":5,
+    "model": "Bianchi Via Nirone 7",
+    "manual": "Bianchi Manual"
+}]
