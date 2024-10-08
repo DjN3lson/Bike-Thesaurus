@@ -1,25 +1,25 @@
 [{
     "id":1,
-    "model": "Trek V1 Model",
-    "manual": "Trek V1 Manual"
+    "model": "Marlin",
+    "brand":"Trek"
 },
 {
     "id":2,
-    "model": "Giant Escape 3",
-    "manual": "Giant Escape Manual"
+    "model": "Escape 3",
+    "brand": "Giant"
 },
 {
     "id":3,
-    "model": "Specialized Allez",
-    "manual": "Specialized Allez Manual"
+    "model": "Allez",
+    "brand": "Specialized"
 },
 {
     "id":4,
-    "model": "Cannondale Quick 4",
-    "manual": "Cannondale Quick Manual"
+    "model": "Quick 4",
+    "brand": "Cannondale"
 },
 {
     "id":5,
-    "model": "Bianchi Via Nirone 7",
-    "manual": "Bianchi Manual"
+    "model": "Via Nirone 7",
+    "brand": "Bianchi"
 }]

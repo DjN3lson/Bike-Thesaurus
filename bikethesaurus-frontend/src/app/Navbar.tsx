@@ -8,7 +8,7 @@ function Navbar(){
         <BrowserRouter>
         <div className="navbar">
             <Link to='/' className="home-button">Home</Link>
-            <Link to='/insert' className="insertpdf-button">Insert</Link>
+            <Link to='/manage' className="manage-button">Manage</Link>
             <Link to='/sign-in' className="signin-button">Sign In</Link>
         </div>
         </BrowserRouter>

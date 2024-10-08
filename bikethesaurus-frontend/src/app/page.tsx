@@ -18,7 +18,7 @@ export default function Home() {
 
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/bicycles');
+        const response = await fetch('/app/bicycles');
         const result = await response.text();
         setData(result);
       } catch (error) {
@@ -31,13 +31,12 @@ export default function Home() {
 
     return <div>{data}</div>
   }
-
   const [searchTerm, setSearchTerm] = useState(''); //searchBar
   const [bicycles, setBicycles] = useState<Bicycle[]>([]); //bicycle db
   const [manualUrl, setManualUrl] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5328/api/bicycles')
+    axios.get('http://localhost:5328/app/bicycles')
       .then(response => {
         setBicycles(response.data)
       })

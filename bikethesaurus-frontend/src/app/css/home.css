@@ -5,17 +5,13 @@
   color: black;
 }
 
-.App-header {
-  display: flex;
-  flex: 1; /* Take remaining space */
-}
-
 .Content {
-  flex: 1; /* Take remaining space */
+  border: 2px solid yellow;
+  flex: 1; /* Take remaining space next to the navbar */
+  padding: 20px;
   display: flex;
-  padding: 20px; /* Padding for content */
-  flex-direction: column;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 /* Navbar */
@@ -25,6 +21,7 @@
   display: flex; /* Use flexbox for layout */
   flex-direction: column; /* Arrange items in a column */
   height: 100vh; /* Full height of the viewport */
+  
 }
 
 .navbar a {
@@ -32,28 +29,34 @@
   text-decoration: none; /* Remove underline from links */
   color: white; /* Text color */
   text-align: center; /* Center text */
-  border-bottom: 1px solid #444; /* Divider between links */
+  border-bottom: 2px solid #444; /* Divider between links */
 }
 
-.navbar a:hover {
-  background-color: #575757; /* Change background on hover */
+/* Searchbar and List  */
+.SearchContent{
+  display: flex;
+  flex-direction: column; /* Stack items in a column */
+  width: 100%; /* Full width */
+  border: 2px dotted blue;
+  align-items: center;
 }
 
-/* Searchbar and List */
 .search {
-  width: 50%; /* Adjust width as needed */
-  margin: 0 auto; /* Center horizontally */
-  margin-bottom: 20px; /* Space below the search bar */
+  width: 75%; /* Full width */
+  box-shadow: none;
+  padding: 10px; /* Add some padding inside the search bar */
+  
 }
 
 .searchbarList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 50%; /* Match width of search bar */
+  width: 100%; /* Full width of the list, matching the search bar */
+  /* border: 2px dotted orange; */
+  margin-top: 20px; /* Space between the search bar and the list */
 }
 
 ul li {
+  
   font-size: 20px;
   margin-top: 10px; /* Space between list items */
+  border-top: 1px solid gray;
 }
