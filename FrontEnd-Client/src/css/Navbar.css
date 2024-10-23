@@ -1,0 +1,21 @@
+.navbar {
+    width: 200px; /* Set the width of the navbar */
+    background-color: #333; /* Background color */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Arrange items in a column */
+    height: 100vh; /* Full height of the viewport */
+}
+
+.navbar ul {
+    list-style-type: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+.navbar li {
+    padding: 15px; /* Space around each link */
+    text-decoration: none; /* Remove underline from links */
+    color: white; /* Text color */
+    text-align: center; /* Center text */
+    border-bottom: 2px solid #444; /* Divider between links */
+}
