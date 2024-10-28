@@ -1,9 +1,4 @@
-import React from "react";
-import { BrowserRouter, Link, Route, Router, Routes } from 'react-router-dom';
-
-import SignIn from './Signin'
-import Manage from "./Manage";
-import App from "./App";
+import { Link } from 'react-router-dom';
 import './css/Navbar.css';
 
 
