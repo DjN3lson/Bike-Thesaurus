@@ -12,28 +12,30 @@ function SignIn() {
 
     const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-    const Account = () => {
-        return {
-            firstName,
-            lastName,
-            email,
-            password,
-            isAdmin
-        };
-    };
+    
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const accountData = Account();
+       
 
         try {
             if (isSignUp) {
-                console.log('Sending sign up data: ', accountData);
+                console.log('Sending sign up data: ', { firstName, lastName, email, password, isAdmin });
                 const response = await axios.post("http://localhost:8080/api/users", {
-                    ...accountData,
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                    isAdmin
                 });
                 console.log('Sign up response: ', response.data)
-                setNotification({message: "Account has been created successfully", type: 'success'});
+                setNotification({message: "Account created successfully", type: 'success'});
+                setIsSignUp(false);
+                setFirstName("");
+                setLastName("");
+                setEmail("");
+                setPassword("");
+                setIsAdmin(false);
             } else {
                 // Add signin logic here when ready
                 console.log('Sending signin data: ', {email, password});
@@ -59,15 +61,16 @@ function SignIn() {
 
     return (
         <>
-            <h1>
-                {isSignUp ? 'SIGN UP' : 'SIGN IN'}
-            </h1>
-            <form onSubmit={handleSubmit}>
-                {notification && (
+        {notification && (
                     <div className={`notification ${notification.type}`}>
                         {notification.message}
                     </div>
                 )}
+            <h1>
+                {isSignUp ? 'SIGN UP' : 'SIGN IN'}
+            </h1>
+            <form onSubmit={handleSubmit}>
+                
                 {isSignUp && (
                     <>
                         <div className="signin">
