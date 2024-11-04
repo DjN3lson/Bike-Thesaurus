@@ -6,15 +6,7 @@ import Searchbar from './Searchbar';
 import './css/App.css'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const handleSignIn = () => {
-    setIsAuthenticated(true);
-  }
-
-  const handleSignOut = () => {
-    setIsAuthenticated(false);
-  }
+  
 
   return (
     <>

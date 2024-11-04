@@ -22,7 +22,7 @@ function Searchbar() {
 
 
     const fecthAPI = async () => {
-        const response = await axios.get("http://localhost:8080/api/bicycles");
+        const response = await axios.get("http://localhost:8000/api/bicycles");
         setAllBicycles(response.data.bicycles);
         setFilteredBicycles(response.data.bicycles);
     }

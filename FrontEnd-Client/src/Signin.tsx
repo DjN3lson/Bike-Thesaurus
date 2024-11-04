@@ -21,7 +21,7 @@ function SignIn() {
         try {
             if (isSignUp) {
                 console.log('Sending sign up data: ', { firstName, lastName, email, password, isAdmin });
-                const response = await axios.post("http://localhost:8080/api/users", {
+                const response = await axios.post("http://localhost:8000/register", {
                     firstName,
                     lastName,
                     email,
@@ -39,7 +39,7 @@ function SignIn() {
             } else {
                 // Add signin logic here when ready
                 console.log('Sending signin data: ', {email, password});
-                const response = await axios.post("http://localhost:8080/api/users/signin", {
+                const response = await axios.post("http://localhost:8000/signin", {
                     email,
                     password,
                 });

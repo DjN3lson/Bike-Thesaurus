@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom';
 import './css/Navbar.css';
 
-interface NavbarProps {
-    isAuthenticated: boolean;
-}
 
 
-function Navbar({isAuthenticated}: NavbarProps) {
+
+function Navbar() {
 
     return (
         <>
-            <Navbar isAuthenticated={isAuthenticated} />
+            
             <div className="navbar">
                 <nav>
                     <ul>
@@ -18,11 +16,7 @@ function Navbar({isAuthenticated}: NavbarProps) {
                             
                             <li> <Link to="/" className="home-button">Home</Link> </li>
                             <li> <Link to="/manage" className="manage-button">Manage</Link> </li>
-                            {isAuthenticated ? ( // Conditional rendering based on authentication
-                            <li> <Link to="/logout" className="logout-button">Log Out</Link></li>
-                        ) : (
                             <li> <Link to="/signin" className="signin-button">Sign In</Link> </li>
-                        )}
                       
                     </ul>
                 </nav>

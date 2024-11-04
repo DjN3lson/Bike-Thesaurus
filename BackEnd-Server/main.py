@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, Response
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_cors import CORS
@@ -7,21 +7,22 @@ from config import ApplicationConfig
 from models import db, User, Bicycle
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={
-    r"/api/*": {
-        "origins": "*",
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
+CORS(app)
 bcrypt = Bcrypt(app)
 
 app.config.from_object(ApplicationConfig)
 db.init_app(app)
 with app.app_context():
-    db.create_all
+    db.create_all()
 
 server_session = Session(app)
+
+@app.before_request
+def handle_preflight():
+    if request.method == 'POST':
+        res = Response()
+        res.headers['X-Content-Type-Options'] = '*'
+        return res
 
 @app.route("/api/bicycles", methods=['GET'])
 def bicycles():
@@ -37,7 +38,7 @@ def bicycles():
     )
 
 
-@app.route("/api/register", methods=['POST'])
+@app.route("/register", methods=['POST'])
 def register_user():
     email = request.json["email"]
     password = request.json["password"]
@@ -49,10 +50,14 @@ def register_user():
 
     if user_exists:
         return jsonify({"error": "User already exists"}), 409
-    hashed_password = bcrypt.generate_password_hash(password)
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(email=email, password=hashed_password, firstName=firstName, lastname=lastname, isAdmin=isAdmin)
-    db.session.add(new_user)
-    db.session.commit()
+    
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     session["user_id"] = new_user.id
     return jsonify({
@@ -60,7 +65,7 @@ def register_user():
         "email": new_user.email
     })
 
-@app.route("/api/login", methods=["POST"])
+@app.route("/signin", methods=["POST"])
 def login_user():
     email = request.json["email"]
     password = request.json["password"]
@@ -78,12 +83,12 @@ def login_user():
         "email": user.email
     })
 
-@app.route("/api/logout", methods=["POST"])
+@app.route("/logout", methods=["POST"])
 def logout_user():
     session.pop("user_id")
-    return "200"
+    return jsonify({"message": "Logged out successfully"}), 200
 
-@app.route("/api/@me")
+@app.route("/@me")
 def get_current_user():
     user_id = session.get("user_id")
 
@@ -97,10 +102,10 @@ def get_current_user():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=8000)
     #app.run(host='0.0.0.0', port=5000, debug=True)
 
 
 # activation of flask through terminal:
-# 1. \venv\Scripts\activate
+# 1. .\venv\Scripts\activate
 # 2. python main.py
