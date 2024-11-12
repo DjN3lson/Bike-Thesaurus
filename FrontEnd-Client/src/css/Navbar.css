@@ -18,4 +18,13 @@
     color: white; /* Text color */
     text-align: center; /* Center text */
     border-bottom: 2px solid #444; /* Divider between links */
+    font-size: 20px;
+    cursor: pointer;
+}
+.navbar li:hover {
+    color: blue;
+}
+
+.bottom{
+    
 }

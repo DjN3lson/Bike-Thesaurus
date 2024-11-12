@@ -12,6 +12,24 @@ bcrypt = Bcrypt(app)
 
 app.config.from_object(ApplicationConfig)
 db.init_app(app)
+
+def add_demo_user():
+    # Check if the demo user already exists
+    demo_user = User.query.filter_by(email='demo@gmail.com').first()
+    if demo_user is None:
+        # Create a new demo user
+        hashed_password = bcrypt.generate_password_hash('1234').decode('utf-8')  # Hash the password
+        new_user = User(email='demo@gmail.com', password=hashed_password, firstName='Demo', lastname='User', isAdmin=False)
+        
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            print("Demo user created successfully.")
+        except Exception as e:
+            print(f"Error creating demo user: {str(e)}")
+    else:
+        print("Demo user already exists.")
+
 with app.app_context():
     db.create_all()
 
@@ -26,16 +44,31 @@ def handle_preflight():
 
 @app.route("/api/bicycles", methods=['GET'])
 def bicycles():
-    return jsonify(
-        {
-            "bicycles": [
-                'Trek',
-                'Giant',
-                'Specialized',
-                'Cannondale'
-            ]
-        }
-    )
+    bicycles_data = [
+        "Trek Domane",
+        "Trek Madone",
+        "Trek Emonda",
+        "Trek Fuel EX",
+        "Giant Defy",
+        "Giant TCR",
+        "Giant Reign",
+        "Giant Trance",
+        "Specialized Roubaix",
+        "Specialized Venge",
+        "Specialized Stumpjumper",
+        "Specialized Enduro",
+        "Cannondale Synapse",
+        "Cannondale SuperSix",
+        "Cannondale Jekyll",
+        "Cannondale Trail",
+        "Bianchi Oltre",
+        "Bianchi Infinito",
+        "Bianchi Specialissima",
+        "Bianchi Methanol"
+    ]
+    return jsonify({
+        "bicycles": bicycles_data
+    })
 
 
 @app.route("/register", methods=['POST'])
@@ -51,7 +84,7 @@ def register_user():
     if user_exists:
         return jsonify({"error": "User already exists"}), 409
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = User(email=email, password=hashed_password, firstName=firstName, lastname=lastname, isAdmin=isAdmin)
+    new_user = User(email=email, hashed_password=hashed_password, firstName=firstName, lastname=lastname, isAdmin=isAdmin)
     
     try:
         db.session.add(new_user)
@@ -62,7 +95,11 @@ def register_user():
     session["user_id"] = new_user.id
     return jsonify({
         "id": new_user.id,
-        "email": new_user.email
+        "email": new_user.email,
+        "password": new_user.hashed_password,
+        "firstName": new_user.firstName,
+        "lastName": new_user.lastName,
+        "isAdmin": new_user.isAdmin
     })
 
 @app.route("/signin", methods=["POST"])
@@ -80,7 +117,8 @@ def login_user():
     session["user_id"] = user.id
     return jsonify({
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "firstName": user.firstName
     })
 
 @app.route("/logout", methods=["POST"])
@@ -90,12 +128,12 @@ def logout_user():
 
 @app.route("/@me")
 def get_current_user():
-    user_id = session.get("user_id")
+    user_email = session.get("user_email")
 
-    if not user_id:
+    if not user_email:
         return jsonify({"error": "User not found"}), 401
     
-    user = User.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(email=user.email).first()
     return jsonify({
         "id": user.id,
         "email": user.email
@@ -103,7 +141,7 @@ def get_current_user():
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
-    #app.run(host='0.0.0.0', port=5000, debug=True)
+    #app.run(host='0.0.0.0', port=8000, debug=True)
 
 
 # activation of flask through terminal:
