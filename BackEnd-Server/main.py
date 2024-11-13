@@ -13,23 +13,6 @@ bcrypt = Bcrypt(app)
 app.config.from_object(ApplicationConfig)
 db.init_app(app)
 
-def add_demo_user():
-    # Check if the demo user already exists
-    demo_user = User.query.filter_by(email='demo@gmail.com').first()
-    if demo_user is None:
-        # Create a new demo user
-        hashed_password = bcrypt.generate_password_hash('1234').decode('utf-8')  # Hash the password
-        new_user = User(email='demo@gmail.com', password=hashed_password, firstName='Demo', lastname='User', isAdmin=False)
-        
-        try:
-            db.session.add(new_user)
-            db.session.commit()
-            print("Demo user created successfully.")
-        except Exception as e:
-            print(f"Error creating demo user: {str(e)}")
-    else:
-        print("Demo user already exists.")
-
 with app.app_context():
     db.create_all()
 
@@ -83,16 +66,15 @@ def register_user():
 
     if user_exists:
         return jsonify({"error": "User already exists"}), 409
+    
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(email=email, hashed_password=hashed_password, firstName=firstName, lastname=lastname, isAdmin=isAdmin)
     
-    try:
-        db.session.add(new_user)
-        db.session.commit()
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    db.add(new_user)
+    db.commit()
 
     session["user_id"] = new_user.id
+
     return jsonify({
         "id": new_user.id,
         "email": new_user.email,
