@@ -1,7 +1,8 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
-import httpClient from "./httpClient";
+axios
 
 interface RegisterProps {
     onLogin: (name: string) => void;
@@ -22,7 +23,7 @@ function Register({ }: RegisterProps) {
         event.preventDefault();
         console.log("Sending data for Registration: ", { firstName, lastName, email, password, isAdmin })
         try {
-            const response = await httpClient().post("http://localhost:5000/register", {
+            const response = await axios.post("http://localhost:5000/register", {
                 firstName,
                 lastName,
                 email,
@@ -99,7 +100,7 @@ function Register({ }: RegisterProps) {
                         onChange={(e) => setIsAdmin(e.target.checked)}
                     />
                 </div>
-                <button type="submit">Sign Up</button>
+                <button type="submit" onClick={() => navigate("/login")}>Sign Up</button>
                 <br />
                 <button
                     type="button"

@@ -7,7 +7,7 @@ from config import ApplicationConfig
 from models import db, User, Bicycle
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 bcrypt = Bcrypt(app)
 
 app.config.from_object(ApplicationConfig)

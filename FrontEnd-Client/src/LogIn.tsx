@@ -1,7 +1,7 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import httpClient from "./httpClient";
-
+axios
 interface LoginProps {
     onLogin: (name: string) => void;
 }
@@ -18,7 +18,7 @@ function Login({ onLogin }: LoginProps) {
         console.log("Sending Data for Logging In: ",email, password);
 
         try {
-            const response = await httpClient().post("http://localhost:5000/signin", {
+            const response = await axios.post("http://localhost:5000/signin", {
                 email, password
             });
             console.log("Data response (login): ", response.data);
