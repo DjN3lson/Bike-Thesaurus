@@ -13,6 +13,9 @@ function Register({ }: RegisterProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isAdmin, setIsAdmin] = useState(false);
+
+    const [notification, setNotification] = useState("");
+
     const navigate = useNavigate();
 
     const handleRegistration = async (event: React.FormEvent) => {
@@ -27,12 +30,15 @@ function Register({ }: RegisterProps) {
                 isAdmin
             });
             console.log("Response of data: ", response.data)
+            setNotification("Sucess");
             
         } catch (error: any) {
-            if (error.response === 401) {
-                alert("Invalid registration")
+            if (error.response === 401 || error.response) {
+                alert("Invalid registration");
+                setNotification("Failed");
             } else {
-                console.log("Registration was successful")
+                console.log("Registration was successful");
+                setNotification("Success");
             }
         }
 
@@ -42,6 +48,7 @@ function Register({ }: RegisterProps) {
     return (
         <>
             <h1>SIGN UP</h1>
+            {notification && <div className="notification">{notification}</div>}
             <form onSubmit={handleRegistration}>
                 <div className="signin">
                     <label htmlFor="firstName">First Name:</label>

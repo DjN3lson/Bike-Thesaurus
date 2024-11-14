@@ -10,6 +10,8 @@ function Login({ onLogin }: LoginProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const [notification, setNotification] = useState("");
+
     const navigate = useNavigate();
 
     const logInUser = async () => {
@@ -20,12 +22,15 @@ function Login({ onLogin }: LoginProps) {
                 email, password
             });
             console.log("Data response (login): ", response.data);
-            
+            setNotification("Success")
+            onLogin(response.data.email)
         }catch(error:any){
-            if(error.response.status===401){
+            if(error.response || error.response.status === 401){
                 alert("Invalid login");
+                setNotification("Failed")
             }else{
                 console.log("Login was successful")
+                setNotification("Success");
             }
         }
     }
@@ -34,6 +39,7 @@ function Login({ onLogin }: LoginProps) {
         <>
             
             <h1>SIGN IN</h1>
+            {notification && <div className="notification">{notification}</div>}
             <form onSubmit={logInUser}>
                 <div className="signin">
                     <label htmlFor="email">Email:</label>
@@ -55,7 +61,7 @@ function Login({ onLogin }: LoginProps) {
                         required
                     />
                 </div>
-                <button type="submit">Sign In</button> <br />
+                <button type="submit" onClick={() => navigate("/")}>Sign In</button> <br />
                 <button
                     type="button"
                     onClick={() => navigate("/register")}
