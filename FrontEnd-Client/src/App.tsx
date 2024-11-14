@@ -1,10 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
 import Manage from './Manage';
-import SignIn from './Signin';
+import SignIn from './Register';
 import Searchbar from './Searchbar';
 import Navbar from './Navbar';
 import './css/App.css'
+import Login from './LogIn';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,12 +26,14 @@ function App() {
     
       <div className="App">
         <header className="App-header">
-          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} firstName={firstName} />
+          <div className='UserContainerName'>          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} firstName={firstName} />
+</div>
         </header>
           <Routes>
             <Route path="/" Component={Searchbar} />
             <Route path="manage" Component={Manage} />
-            <Route path="/signin" element={<SignIn onLogin={handleLogin} />}/>
+            <Route path="/register" element={<SignIn onLogin={handleLogin} />}/>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/logout" />
           </Routes>
       </div>

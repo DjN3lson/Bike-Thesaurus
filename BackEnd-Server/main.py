@@ -93,6 +93,7 @@ def login_user():
 
     if user is None:
         return  jsonify({"error": "Email is not found"}), 401
+    
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Wrong Password, Try again"}), 401
     
@@ -122,8 +123,8 @@ def get_current_user():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
-    #app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(debug=True, port=5000)
+    #app.run(host='0.0.0.0', port=5000, debug=True)
 
 
 # activation of flask through terminal:

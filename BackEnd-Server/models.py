@@ -11,11 +11,11 @@ def get_uuid():
 
 class User(db.Model):
     __tablename__ = "users" #for table name
-    id = db.Column( db.Integer, primary_key=True, default=get_uuid)
-    email = db.Column( db.String, unique=True)
+    id = db.Column( db.Integer, primary_key=True, unique=True, default=get_uuid)
+    email = db.Column( db.String(255), unique=True)
     password = db.Column ( db.String(255), unique=True)
-    firstName = db.Column( db.String(50))
-    lastName = db.Column( db.String(100))
+    firstName = db.Column( db.String(50), unique=True)
+    lastName = db.Column( db.String(100), unique=True)
     isAdmin = db.Column( db.Boolean, unique=True)
 
 

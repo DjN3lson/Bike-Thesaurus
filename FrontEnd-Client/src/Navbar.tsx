@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import './css/Navbar.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 
 interface NavbarProps {
@@ -12,15 +13,17 @@ interface NavbarProps {
 
 function Navbar({ isLoggedIn, onLogout, firstName }: NavbarProps) {
     const navigate = useNavigate();
+
     const handleLogout = async () => {
         try {
-            await axios.post("http://localhost:8000/logout");
+            await axios.post("http://localhost:5000/logout");
             onLogout();
-            navigate("/signin")
+            navigate("/register")
         } catch (error) {
             console.error("Error logging out", error);
         }
     };
+
     return (
         <>
             <div className="navbar">
@@ -36,7 +39,7 @@ function Navbar({ isLoggedIn, onLogout, firstName }: NavbarProps) {
                                 </div>
                             </>
                         ) : (
-                            <li> <Link to="/signin" className="signin-button">Sign In</Link> </li>
+                            <li> <Link to="/register" className="signin-button">Register</Link> </li>
                         )}
 
                     </ul>
