@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
 import Manage from './Manage';
-import SignIn from './Register';
+import Register from './Register';
 import Searchbar from './Searchbar';
 import Navbar from './Navbar';
 import './css/App.css'
@@ -9,33 +9,34 @@ import Login from './LogIn';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [firstName, setUserName] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
 
-  const handleLogin = () =>{
+  const handleLogin = (name: string) => {
     setIsLoggedIn(true);
-    setUserName(firstName)
+    setFirstName(name)
   }
 
-  const handleLogout= () =>{
+  const handleLogout = () => {
     setIsLoggedIn(false)
-    setUserName(null);
+    setFirstName(null);
   }
 
   return (
     <>
-    
+
       <div className="App">
         <header className="App-header">
-          <div className='UserContainerName'>          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} firstName={firstName} />
-</div>
+          <div className='UserContainerName'>
+            <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} firstName={firstName} />
+          </div>
         </header>
-          <Routes>
-            <Route path="/" Component={Searchbar} />
-            <Route path="manage" Component={Manage} />
-            <Route path="/register" element={<SignIn onLogin={handleLogin} />}/>
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/logout" />
-          </Routes>
+        <Routes>
+        <Route path="/" element={<Searchbar />} />
+          <Route path="manage" element={<Manage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/logout" />
+        </Routes>
       </div>
     </>
   )

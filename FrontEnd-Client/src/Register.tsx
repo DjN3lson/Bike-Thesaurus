@@ -4,11 +4,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 axios
 
-interface RegisterProps {
-    onLogin: (name: string) => void;
-}
 
-function Register({ }: RegisterProps) {
+function Register() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -29,12 +26,12 @@ function Register({ }: RegisterProps) {
                 email,
                 password,
                 isAdmin
-            });
+            }, { withCredentials: true });
             console.log("Response of data: ", response.data)
             setNotification("Sucess");
             
         } catch (error: any) {
-            if (error.response === 401 || error.response) {
+            if (error.response && error.response.status === 409) {
                 alert("Invalid registration");
                 setNotification("Failed");
             } else {
@@ -42,7 +39,7 @@ function Register({ }: RegisterProps) {
                 setNotification("Success");
             }
         }
-
+        navigate("/login");
     }
 
 
@@ -100,7 +97,7 @@ function Register({ }: RegisterProps) {
                         onChange={(e) => setIsAdmin(e.target.checked)}
                     />
                 </div>
-                <button type="submit" onClick={() => navigate("/login")}>Sign Up</button>
+                <button type="submit">Sign Up</button>
                 <br />
                 <button
                     type="button"

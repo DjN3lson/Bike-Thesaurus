@@ -54,7 +54,7 @@ def bicycles():
     })
 
 
-@app.route("/register", methods=['POST'])
+@app.route("/register", methods=[ 'POST'])
 def register_user():
     email = request.json["email"]
     password = request.json["password"]
@@ -84,7 +84,7 @@ def register_user():
         "isAdmin": new_user.isAdmin
     })
 
-@app.route("/signin", methods=["POST"])
+@app.route("/signin", methods=['GET', 'POST'])
 def login_user():
     email = request.json["email"]
     password = request.json["password"]

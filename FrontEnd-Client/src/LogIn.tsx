@@ -14,18 +14,19 @@ function Login({ onLogin }: LoginProps) {
 
     const navigate = useNavigate();
 
-    const logInUser = async () => {
+    const logInUser = async (event: React.FormEvent) => {
+        event.preventDefault();
         console.log("Sending Data for Logging In: ",email, password);
 
         try {
             const response = await axios.post("http://localhost:5000/signin", {
                 email, password
-            });
+            }, {withCredentials: true});
             console.log("Data response (login): ", response.data);
             setNotification("Success")
-            onLogin(response.data.email)
+            onLogin(response.data.firstName)
         }catch(error:any){
-            if(error.response || error.response.status === 401){
+            if(error.response && error.response.status === 401){
                 alert("Invalid login");
                 setNotification("Failed")
             }else{
@@ -33,6 +34,7 @@ function Login({ onLogin }: LoginProps) {
                 setNotification("Success");
             }
         }
+        navigate("/");
     }
 
     return (
@@ -61,7 +63,7 @@ function Login({ onLogin }: LoginProps) {
                         required
                     />
                 </div>
-                <button type="submit" onClick={() => navigate("/")}>Sign In</button> <br />
+                <button type="submit">Sign In</button> <br />
                 <button
                     type="button"
                     onClick={() => navigate("/register")}
