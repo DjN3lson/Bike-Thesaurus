@@ -6,20 +6,24 @@ import axios from 'axios';
 
 import './css/Searchbar.css';
 
+interface Bicycle {
+    id:number;
+    model:string;
+    brand:string;
+    model_id:number;
+}
+
 function Searchbar() {
-    // const [inputText, setInputText] = useState('');
-    const [allBicycles, setAllBicycles] = useState([]);
-    const [filteredBicycles, setFilteredBicycles] = useState([]);
+    const [allBicycles, setAllBicycles] = useState<Bicycle[]>([]);
+    const [filteredBicycles, setFilteredBicycles] = useState<Bicycle[]>([]);
 
     const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const lowerCase = e.target.value.toLowerCase();
-        const filtered = allBicycles.filter((bicycle:string) =>
-            bicycle.toLowerCase().includes(lowerCase)
+        const filtered = allBicycles.filter((bicycle: {id:number, brand:string; model:string, model_id:number;}) =>
+            bicycle.brand.toLowerCase().includes(lowerCase) || bicycle.model.toLowerCase().includes(lowerCase)
     );
     setFilteredBicycles(filtered);
     }
-
-
 
     const fecthAPI = async () => {
         const response = await axios.get("http://localhost:5000/api/bicycles");
@@ -57,9 +61,9 @@ function Searchbar() {
                         }}
                     />
                 </div>
-                {filteredBicycles.map((bicycles, index) => (
+                {filteredBicycles.map((bicycle, index) => (
                     <div key={index} className="searchbarList">
-                        <span>{bicycles}</span> <br />
+                        <span>{bicycle.id} -- {bicycle.model} {bicycle.brand} {bicycle.model_id}</span> <br />
                     </div>
                 ))}
             </div>

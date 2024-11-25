@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request, session, Response
+from flask import Flask, jsonify, request, session, Response, make_response
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_cors import CORS
+
 
 from config import ApplicationConfig
 from models import db, User, Bicycle
@@ -28,31 +29,32 @@ def handle_preflight():
 @app.route("/api/bicycles", methods=['GET'])
 def bicycles():
     bicycles_data = [
-        "Trek Domane",
-        "Trek Madone",
-        "Trek Emonda",
-        "Trek Fuel EX",
-        "Giant Defy",
-        "Giant TCR",
-        "Giant Reign",
-        "Giant Trance",
-        "Specialized Roubaix",
-        "Specialized Venge",
-        "Specialized Stumpjumper",
-        "Specialized Enduro",
-        "Cannondale Synapse",
-        "Cannondale SuperSix",
-        "Cannondale Jekyll",
-        "Cannondale Trail",
-        "Bianchi Oltre",
-        "Bianchi Infinito",
-        "Bianchi Specialissima",
-        "Bianchi Methanol"
+            {"id": 1, "brand": "Trek", "model": "Domane", "model_id": 101},
+            {"id": 2, "brand": "Trek", "model": "Madone", "model_id": 102},
+            {"id": 3, "brand": "Trek", "model": "Emonda", "model_id": 103},
+            {"id": 4, "brand": "Trek", "model": "Fuel EX", "model_id": 104},
+            {"id": 5, "brand": "Giant", "model": "Defy", "model_id": 105},
+            {"id": 6, "brand": "Giant", "model": "TCR", "model_id": 106},
+            {"id": 7, "brand": "Giant", "model": "Reign", "model_id": 107},
+            {"id": 8, "brand": "Giant", "model": "Trance", "model_id": 108},
+            {"id": 9, "brand": "Specialized", "model": "Roubaix", "model_id": 109},
+            {"id": 10, "brand": "Specialized", "model": "Venge", "model_id": 110},
+            {"id": 11, "brand": "Specialized", "model": "Stumpjumper", "model_id": 111},
+            {"id": 12, "brand": "Specialized", "model": "Enduro", "model_id": 112},
     ]
-    return jsonify({
-        "bicycles": bicycles_data
-    })
+    return jsonify({"bicycles": bicycles_data})
+    
 
+@app.route("/api/addbicycle", methods=['GET', 'POST'])
+def addbicycles():
+    return jsonify({
+        "Added bicycle to database"
+    })
+@app.route("/api/bicycle", methods=['GET', 'POST'])
+def updatebicycle():
+    return jsonify({
+        "updated bicycle"
+    })
 
 @app.route("/register", methods=[ 'POST'])
 def register_user():

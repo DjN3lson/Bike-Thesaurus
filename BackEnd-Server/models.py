@@ -21,7 +21,7 @@ class User(db.Model):
 
 class Bicycle(db.Model):
     __tablename__ = "bicycles"
-    id = db.Column (db.Integer, primary_key=True)
+    id = db.Column (db.Integer, primary_key=True, default=get_uuid)
     brand = db.Column (db.String, unique=False)
     model = db.Column (db.String, unique=True)
     model_id = db.Column (db.Integer, unique = True)

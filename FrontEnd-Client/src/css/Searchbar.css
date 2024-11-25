@@ -4,6 +4,7 @@
     width: 100vw; /* Full width */
     border: 2px dotted blue;
     align-items: center;
+    overflow-y: scroll;
   }
   
   .search {
@@ -15,10 +16,10 @@
   
   .searchbarList {
     width: 100%; /* Full width of the list, matching the search bar */
-    /* border: 2px dotted orange; */
     margin-top: 20px; /* Space between the search bar and the list */
     font-size: 25px;
     margin-top: 10px; /* Space between list items */
     border-top: 1px solid gray;
+    
   }
   
