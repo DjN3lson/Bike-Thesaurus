@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request, session, Response, make_response
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_cors import CORS
-
+import os
+from werkzeug.utils import secure_filename 
 
 from config import ApplicationConfig
 from models import db, User, Bicycle
@@ -12,6 +13,8 @@ CORS(app, supports_credentials=True)
 bcrypt = Bcrypt(app)
 
 app.config.from_object(ApplicationConfig)
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['ALLOWED_EXTENSIOS'] = {'pdf', 'png', 'doc', 'jpg', 'docx', 'txt'}
 db.init_app(app)
 
 with app.app_context():
@@ -45,15 +48,53 @@ def bicycles():
     return jsonify({"bicycles": bicycles_data})
     
 
-@app.route("/api/addbicycle", methods=['GET', 'POST'])
+@app.route("/api/getbicycle", methods=['GET'])
+def get_bicycle():
+
+    bicycles = Bicycle.query.all()
+    return jsonify (bicycles([{"id": Bicycle.id, "brand":Bicycle.brand, "model":Bicycle.model, "model id": Bicycle.model_id, "bicycle_pdf": Bicycle.bicycle_pdf} for bicycle in bicycles]))
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+@app.route("/api/addbicycle", methods=['POST'])
 def addbicycles():
+    data = request.get_json()
+    new_bicycle = Bicycle(
+        brand=data['brand'],
+        model=data['model'],
+        model_id=data['model_id'],
+        bicycle_pdf = data['bicycle_pdf']
+    )
+    if 'bicycle_pdf' not in request.files:
+        return jsonify({"error": "No pdf in bicycle"}), 400
+    file = request.files['bicycle_pdf']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        new_bicycle.bicycle_pdf = file_path
+    
+    if new_bicycle.model_id in data and data['model_id'] is not None:
+        new_bicycle.model_id = data['model_id']
+    else:
+        new_bicycle.model_id = None
+    
+    db.session.add(new_bicycle)
+    db.session.commit()
     return jsonify({
-        "Added bicycle to database"
-    })
-@app.route("/api/bicycle", methods=['GET', 'POST'])
+        "message": "Bicycle has been added", "bicycle": new_bicycle.id
+    }), 201
+
+@app.route("/api/bicycle", methods=['POST'])
 def updatebicycle():
+    data = request.get_json()
+    bicycle = Bicycle()
+    bicycle.verified = True
     return jsonify({
-        "updated bicycle"
+        bicycle,
+        "updated bicycle", 201
     })
 
 @app.route("/register", methods=[ 'POST'])
@@ -72,8 +113,8 @@ def register_user():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(email=email, hashed_password=hashed_password, firstName=firstName, lastname=lastname, isAdmin=isAdmin)
     
-    db.add(new_user)
-    db.commit()
+    db.session.add(new_user)
+    db.session.commit()
 
     session["user_id"] = new_user.id
 

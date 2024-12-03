@@ -25,3 +25,4 @@ class Bicycle(db.Model):
     brand = db.Column (db.String, unique=False)
     model = db.Column (db.String, unique=True)
     model_id = db.Column (db.Integer, unique = True)
+    bicycle_pdf = db.Column(db.String)
