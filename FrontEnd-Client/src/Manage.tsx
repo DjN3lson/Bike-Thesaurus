@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-import Register from "./Register";
 import './css/manage.css';
-import { Form } from "react-router-dom";
+
 
 interface Bicycle {
     id: number;
@@ -18,6 +18,8 @@ function Manage() {
     const [windowOpen, setWindowOpen] = useState(false);
 
     const allowedExtensions = ['pdf', 'png', 'jpg','doc', 'docx', 'txt']
+
+    const navigate = useNavigate();
     const openWindow = () => {
         setWindowOpen(true);
     }
@@ -25,9 +27,9 @@ function Manage() {
         setWindowOpen(false)
     }
 
-    const editBicycle = async (event: React.FormEvent) => {
-        event.preventDefault();
-    }
+    // const editBicycle = async (event: React.FormEvent) => {
+    //     event.preventDefault();
+    // }
 
     const addBicycle = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -58,6 +60,8 @@ function Manage() {
                 console.error("Error in adding bicycle to database", error);
             }
             closePopup();
+            navigate("/manage");
+
     };
 
     useEffect(() => {
@@ -112,7 +116,7 @@ function Manage() {
                             <button className="button-popup" onClick={closePopup}>X</button>
                         </div>
                         <h2> Add Bicycle</h2>
-                        <Form onSubmit={addBicycle}>
+                        <form onSubmit={addBicycle}>
                             <div>
                                 <label>Brand: </label>
                                 <input type="text" name="brand" id="brand" required />
@@ -129,8 +133,8 @@ function Manage() {
                                 <label> Upload PDF: </label>
                                 <input type="file" name="bicycle_pdf" id="bicycle_pdf" accept={allowedExtensions.map(ext => `.${ext}`).join(',')} required />
                             </div>
-                            <button type="submit">Add Bicycle</button>
-                        </Form>
+                            <button type="submit" onClick={addBicycle}>Add Bicycle</button>
+                        </form>
                     </div>
                 </div>
             )}
