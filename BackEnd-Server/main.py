@@ -17,10 +17,13 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIOS'] = {'pdf', 'png', 'doc', 'jpg', 'docx', 'txt'}
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 server_session = Session(app)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.before_request
 def handle_preflight():
@@ -28,39 +31,58 @@ def handle_preflight():
         res = Response()
         res.headers['X-Content-Type-Options'] = '*'
         return res
-
-@app.route("/api/bicycles", methods=['GET'])
-def bicycles():
-    bicycles_data = [
-            {"id": 1, "brand": "Trek", "model": "Domane", "model_id": 101},
-            {"id": 2, "brand": "Trek", "model": "Madone", "model_id": 102},
-            {"id": 3, "brand": "Trek", "model": "Emonda", "model_id": 103},
-            {"id": 4, "brand": "Trek", "model": "Fuel EX", "model_id": 104},
-            {"id": 5, "brand": "Giant", "model": "Defy", "model_id": 105},
-            {"id": 6, "brand": "Giant", "model": "TCR", "model_id": 106},
-            {"id": 7, "brand": "Giant", "model": "Reign", "model_id": 107},
-            {"id": 8, "brand": "Giant", "model": "Trance", "model_id": 108},
-            {"id": 9, "brand": "Specialized", "model": "Roubaix", "model_id": 109},
-            {"id": 10, "brand": "Specialized", "model": "Venge", "model_id": 110},
-            {"id": 11, "brand": "Specialized", "model": "Stumpjumper", "model_id": 111},
-            {"id": 12, "brand": "Specialized", "model": "Enduro", "model_id": 112},
-    ]
-    return jsonify({"bicycles": bicycles_data})
     
 
-@app.route("/api/getbicycle", methods=['GET'])
+def bicycleList():
+    bicycle1 = Bicycle(
+        id=1,
+        brand="Trek",
+        model="Domane",
+        model_id=101,
+        bicycle_pdf="uploads/bicycle1.pdf"
+    )
+    
+    bicycle2 = Bicycle(
+        id=2,
+        brand="Giant",
+        model="Defy",
+        model_id=102,
+        bicycle_pdf="uploads/bicycle2.pdf"
+    )
+    
+    bicycle3 = Bicycle(
+        id=3,
+        brand="Specialized",
+        model="Roubaix",
+        model_id=103,
+        bicycle_pdf="uploads/bicycle3.pdf"
+    )
+
+    db.session.add(bicycle1)
+    db.session.add(bicycle2)
+    db.session.add(bicycle3)
+    db.session.commit()
+
+@app.route("/api/getbicycle", methods=['GET', 'POST'])
 def get_bicycle():
 
     bicycles = Bicycle.query.all()
-    return jsonify (bicycles([{"id": Bicycle.id, "brand":Bicycle.brand, "model":Bicycle.model, "model id": Bicycle.model_id, "bicycle_pdf": Bicycle.bicycle_pdf} for bicycle in bicycles]))
+    print(bicycles)
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    return jsonify ([{
+        "id": bicycle.id, 
+        "brand":bicycle.brand, 
+        "model":bicycle.model, 
+        "model id": bicycle.model_id, 
+        "bicycle_pdf": bicycle.bicycle_pdf
+        } for bicycle in bicycles])
+
+
 
 
 @app.route("/api/addbicycle", methods=['POST'])
 def addbicycles():
-    data = request.get_json()
+    data = request.form
     new_bicycle = Bicycle(
         brand=data['brand'],
         model=data['model'],
@@ -69,6 +91,7 @@ def addbicycles():
     )
     if 'bicycle_pdf' not in request.files:
         return jsonify({"error": "No pdf in bicycle"}), 400
+    
     file = request.files['bicycle_pdf']
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -83,11 +106,19 @@ def addbicycles():
     
     db.session.add(new_bicycle)
     db.session.commit()
+
     return jsonify({
-        "message": "Bicycle has been added", "bicycle": new_bicycle.id
+        "message": "Bicycle has been added", 
+        "bicycle":{
+            "id": new_bicycle.id,
+            "brand": new_bicycle.brand,
+            "model": new_bicycle.model,
+            "model_id": new_bicycle.model_id,
+            "bicycle_pdf": new_bicycle.bicycle_pdf
+        }
     }), 201
 
-@app.route("/api/bicycle", methods=['POST'])
+@app.route("/api/editbicycle", methods=['POST'])
 def updatebicycle():
     data = request.get_json()
     bicycle = Bicycle()
@@ -97,73 +128,6 @@ def updatebicycle():
         "updated bicycle", 201
     })
 
-@app.route("/register", methods=[ 'POST'])
-def register_user():
-    email = request.json["email"]
-    password = request.json["password"]
-    firstName = request.json["firstName"]
-    lastname = request.json["lastName"]
-    isAdmin = request.json["isAdmin"]
-
-    user_exists = User.query.filter_by(email=email).first() is not None
-
-    if user_exists:
-        return jsonify({"error": "User already exists"}), 409
-    
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = User(email=email, hashed_password=hashed_password, firstName=firstName, lastname=lastname, isAdmin=isAdmin)
-    
-    db.session.add(new_user)
-    db.session.commit()
-
-    session["user_id"] = new_user.id
-
-    return jsonify({
-        "id": new_user.id,
-        "email": new_user.email,
-        "password": new_user.hashed_password,
-        "firstName": new_user.firstName,
-        "lastName": new_user.lastName,
-        "isAdmin": new_user.isAdmin
-    })
-
-@app.route("/signin", methods=['GET', 'POST'])
-def login_user():
-    email = request.json["email"]
-    password = request.json["password"]
-
-    user = User.query.filter_by(email=email).first()
-
-    if user is None:
-        return  jsonify({"error": "Email is not found"}), 401
-    
-    if not bcrypt.check_password_hash(user.password, password):
-        return jsonify({"error": "Wrong Password, Try again"}), 401
-    
-    session["user_id"] = user.id
-    return jsonify({
-        "id": user.id,
-        "email": user.email,
-        "firstName": user.firstName
-    })
-
-@app.route("/logout", methods=["POST"])
-def logout_user():
-    session.pop("user_id")
-    return jsonify({"message": "Logged out successfully"}), 200
-
-@app.route("/@me")
-def get_current_user():
-    user_email = session.get("user_email")
-
-    if not user_email:
-        return jsonify({"error": "User not found"}), 401
-    
-    user = User.query.filter_by(email=user.email).first()
-    return jsonify({
-        "id": user.id,
-        "email": user.email
-    })
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
