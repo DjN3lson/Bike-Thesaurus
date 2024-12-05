@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AddForm from './AddForm';
 
 import './css/manage.css';
 
 
 function Manage() {
-    
-    const [bicycles, setBicycles] = useState<{id:number, brand:string, model:string, model_id:number,bicycle_pdf:string}[]>([]);
-    const [allBicycles, setAllBicycles] = useState<[]>([]);
-    const [windowOpen, setWindowOpen] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
-    const [loadingState, setLoadingState] = useState();
 
-    const allowedExtensions = ['pdf', 'png', 'jpg','doc', 'docx', 'txt']
+    const [bicycles, setBicycles] = useState([]);
+    const [brand, setBrand] = useState();
+    const [model, setModel] = useState("");
+    const [model_id, setModel_id] = useState();
+    const [bicycle_pdf, setBicycle_pdf] = useState("");
+
+    const [windowOpen, setWindowOpen] = useState(false);
+    const [addFormOpen, setAddFormOpen] = useState(false);
+
+
+    const allowedExtensions = ['pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg']
 
     const navigate = useNavigate();
     const openWindow = () => {
@@ -21,52 +26,39 @@ function Manage() {
     }
     const closePopup = () => {
         setWindowOpen(false);
-        setMessage(null);
+
+    }
+    const changeManage = (bicycle) => {
+        setBrand(bicycle.brand);
+        setModel(bicycle.model);
+        setModel_id(bicycle.model_id);
+        setBicycle_pdf(bicycle.bicycle_pdf);
+        setWindowOpen(true); 
     }
 
-    // const editBicycle = async (event: React.FormEvent) => {
-    //     event.preventDefault();
-    // }
-
-    const addBicycle = async (e: React.FormEvent) => {
+    const editBicycle = async (e) => {
         e.preventDefault();
-        const form = e.target as HTMLFormElement;
+        const data = {
+            brand, model, model_id, bicycle_pdf
+        }
+        const url = "http://localhost:5000/editbicycle/<int:bicycle_id>"
+        const options = {
+            method:"PATCH"
+        }
+    }
 
-        const bicycleData = new FormData();
-        const pdfInput = form.elements.namedItem("bicycle_pdf") as HTMLInputElement | null;
+    const openAddForm = () => {
+        setAddFormOpen(true);
+    }
 
-        bicycleData.append("brand", (form.elements.namedItem("brand") as HTMLInputElement).value)
-        bicycleData.append("model", (form.elements.namedItem("model") as HTMLInputElement).value)
-        bicycleData.append("model_id", (form.elements.namedItem("model_id") as HTMLInputElement).value);
-       
-        if(pdfInput && pdfInput.files){
-        bicycleData.append("bicycle_pdf", pdfInput.files[0])}
-        else{
-        console.error("PDF input is missing or has no files")}
-
-            try {
-                const response = await axios.post("http://localhost:5000/api/addBicycles", bicycleData, {
-                    headers:{
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                const new_bicycle = response.data.bicycle;
-                setBicycles(prevBicycles => [...prevBicycles, new_bicycle]);
-                setMessage(response.data.message);
-            }catch(error) {
-                console.error("Error in adding bicycle to database", error);
-                setMessage("Error adding bicycle. please try again");
-            }
-            closePopup();
-            navigate("/manage");
-
-    };
+    const closeAddForm = () => {
+        setAddFormOpen(false);
+    }
 
     useEffect(() => {
         const fetchBicycles = async () => {
             try {
-                const bicycle = await axios.get("http://localhost:5000/api/listbicycles");
+                const bicycle = await axios.get("http://localhost:5000/bicycles");
                 setBicycles(bicycle.data.bicycles);
             } catch (error) {
                 console.error("Error fetching bicycles", error);
@@ -79,7 +71,6 @@ function Manage() {
     return (
         <div className="manage-container">
             <h1>Bicycle List</h1>
-            {message && <div className="notification">{message} </div>}
             <div className="table-container">
                 <div className="table-scroll">
                     <table>
@@ -93,8 +84,8 @@ function Manage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {bicycles.map(bicycle => (
-                                <tr key={bicycle.id}>
+                            {bicycles.map((bicycle) => (
+                                <tr key={bicycle.id} onClick={() => changeManage(bicycle)}>
                                     <td>{bicycle.id}</td>
                                     <td>{bicycle.bicycle_pdf}</td>
                                     <td>{bicycle.brand}</td>
@@ -106,10 +97,16 @@ function Manage() {
                     </table>
                 </div>
                 <div className="button-container">
-                    <button onClick={openWindow}>Add Bicycle</button>
-                    <button>Edit Bicycle</button>
+                    <button onClick={openAddForm}>Add Bicycle</button>
+                    <button onClick={() => changeManage(bicycles[0])}>Edit Bicycle</button>
                 </div>
             </div>
+
+            {addFormOpen && (
+                <div className="popup-overlay">
+                    <AddForm closeModal={closeAddForm} />
+                </div>
+            )}
 
             {windowOpen && (
                 <div className="popup-overlay">
@@ -122,19 +119,19 @@ function Manage() {
                         <form onSubmit={addBicycle}>
                             <div>
                                 <label>Brand:* </label>
-                                <input type="text" name="brand" id="brand" required />
+                                <input type="text" name="brand" id="brand" value={brand} onChange={(e) => setBrand(e.target.value)}required />
                             </div>
                             <div>
-                            <label>Model:* </label>
-                            <input type="text" name="model" id="model" required />
+                                <label>Model:* </label>
+                                <input type="text" name="model" id="model" value={model} onChange={(e) => setModel(e.target.value)} required />
                             </div>
                             <div>
-                            <label>Model id</label>
-                            <input type="text" name="model_id" id="model_id"/>
+                                <label>Model Id</label>
+                                <input type="text" name="model_id" id="model_id" value={model_id} onChange={(e) => setModel_id(e.target.value)}/>
                             </div>
                             <div>
                                 <label> Upload PDF:* </label>
-                                <input type="file" name="bicycle_pdf" id="bicycle_pdf" accept={allowedExtensions.map(ext => `.${ext}`).join(',')} required />
+                                <input type="file" name="bicycle_pdf" id="bicycle_pdf" value={bicycle_pdf} onChange={(e) => setBicycle_pdf(e.target.value)} accept={allowedExtensions.map(ext => `.${ext}`).join(',')} required />
                             </div>
                             <button type="submit">Add Bicycle</button>
                         </form>

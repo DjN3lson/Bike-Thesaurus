@@ -1,14 +1,10 @@
 import { Link } from 'react-router-dom';
 import './css/Navbar.css';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-interface NavbarProps {
-   
-}
 
-function Navbar({  }: NavbarProps) {
+function Navbar() {
     const navigate = useNavigate();
 
 

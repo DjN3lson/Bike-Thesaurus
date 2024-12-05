@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 
-import Manage from './Manage';
+import Manage from './Manage.jsx';
 
 import Searchbar from './Searchbar';
 import Navbar from './Navbar';
