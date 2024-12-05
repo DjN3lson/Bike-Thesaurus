@@ -3,6 +3,7 @@ from flask_session import Session
 from flask_cors import CORS, cross_origin
 import os
 from werkzeug.utils import secure_filename 
+import base64, binascii
 
 from models import db, Bicycle
 from config import ApplicationConfig
@@ -14,6 +15,7 @@ CORS(app, supports_credentials=True)
 app.config.from_object(ApplicationConfig)
 
 db.init_app(app)
+
 
 def bicycles():
     try:
@@ -41,6 +43,7 @@ server_session = Session(app)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+
 @app.before_request
 def handle_preflight():
     if request.method == 'POST':
@@ -66,34 +69,40 @@ def addbicycles():
     
     if not brand or not model or not bicycle_pdf:
         return jsonify(
-            ({"message": "Missing brand, model and bicycle pdf"}), 400
+            ({"message": "Missing brand or model"}), 400
         )
     
-    file = request.files['bicycle_pdf']
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
-        new_bicycle.bicycle_pdf = file_path
+    existing_bicycle = Bicycle.query.filter_by(id = id).first()
+    if existing_bicycle:
+            return jsonify({"message": "This bicycle already exists"}), 400
     
-    if 'bicycle_pdf' not in request.files:
-        return jsonify({"error": "No pdf in bicycle"}), 400
-
-    if new_bicycle.model_id in Bicycle.model_id is not None:
-        new_bicycle.model_id = Bicycle.model_id
+    if bicycle_pdf.startswith("http"):
+        #case 1: if its URL
+        file_path = bicycle_pdf
     else:
-        new_bicycle.model_id = 000
-    
+        try:
+            #case 2: if its a base64, decode and save file
+            pdf_bytes = base64.b64decode(bicycle_pdf)
+            filename = f"{secure_filename(brand)}_{secure_filename(model)}_{secure_filename(model_id)}.pdf"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            with open(file_path, "wb") as pdf_file:
+                pdf_file.write(pdf_bytes)
+        except (binascii.Error, Exception) as e:
+            return jsonify({"message": f"Error processing pdf: {str(e)}"}),400
+        
     new_bicycle = Bicycle(brand = brand, model = model, model_id = model_id, bicycle_pdf = bicycle_pdf )
     
     try:
         db.session.add(new_bicycle)
         db.session.commit()
     except Exception as e:
+        db.session.rollback()
         return jsonify({"message": str(e)}), 400
 
     return jsonify({
         "message": f"Bicycle {new_bicycle.id} has been added"}), 201
+
 
 @app.route("/editbicycle/<int:bicycle_id>", methods=["PATCH"])
 def updatebicycle(bicycle_id):
