@@ -57,8 +57,6 @@ def listbicycles():
     return jsonify ({"bicycles": json_bicycles})
 
 
-
-
 @app.route("/addbicycle", methods=["POST"])
 def addbicycles():
     brand = request.json.get("brand")
@@ -70,8 +68,6 @@ def addbicycles():
         return jsonify(
             ({"message": "Missing brand, model and bicycle pdf"}), 400
         )
-    
-    
     
     file = request.files['bicycle_pdf']
     if file and allowed_file(file.filename):
@@ -97,15 +93,7 @@ def addbicycles():
         return jsonify({"message": str(e)}), 400
 
     return jsonify({
-        "message": "Bicycle has been added", 
-        "bicycle":{
-            "id": new_bicycle.id,
-            "brand": new_bicycle.brand,
-            "model": new_bicycle.model,
-            "model_id": new_bicycle.model_id,
-            "bicycle_pdf": new_bicycle.bicycle_pdf
-        }
-    }), 201
+        "message": f"Bicycle {new_bicycle.id} has been added"}), 201
 
 @app.route("/editbicycle/<int:bicycle_id>", methods=["PATCH"])
 def updatebicycle(bicycle_id):
