@@ -5,18 +5,13 @@ import { useNavigate } from "react-router-dom";
 import './css/manage.css';
 
 
-interface Bicycle {
-    id: number;
-    model: string;
-    brand: string;
-    model_id: number;
-    bicycle_pdf: string;
-}
-
 function Manage() {
-    const [bicycles, setBicycles] = useState<Bicycle[]>([]);
+    
+    const [bicycles, setBicycles] = useState<{id:number, brand:string, model:string, model_id:number,bicycle_pdf:string}[]>([]);
+    const [allBicycles, setAllBicycles] = useState<[]>([]);
     const [windowOpen, setWindowOpen] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const [loadingState, setLoadingState] = useState();
 
     const allowedExtensions = ['pdf', 'png', 'jpg','doc', 'docx', 'txt']
 
@@ -33,9 +28,9 @@ function Manage() {
     //     event.preventDefault();
     // }
 
-    const addBicycle = async (event: React.FormEvent) => {
-        event.preventDefault();
-        const form = event.target as HTMLFormElement;
+    const addBicycle = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
 
         const bicycleData = new FormData();
         const pdfInput = form.elements.namedItem("bicycle_pdf") as HTMLInputElement | null;
@@ -71,7 +66,7 @@ function Manage() {
     useEffect(() => {
         const fetchBicycles = async () => {
             try {
-                const bicycle = await axios.get("http://localhost:5000/api/getbicycles");
+                const bicycle = await axios.get("http://localhost:5000/api/listbicycles");
                 setBicycles(bicycle.data.bicycles);
             } catch (error) {
                 console.error("Error fetching bicycles", error);

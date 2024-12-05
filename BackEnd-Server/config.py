@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
 import os
-import redis
+
 
 load_dotenv()
 
@@ -9,8 +10,11 @@ class ApplicationConfig():
     SQLAlCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URI"] #Load DATABASE_URI from .env
-    SESSION_TYPE = "redis"
+    #configuration for MySQL
+    SESSION_TYPE = "filesystem"
     SESSION_PERMANENT = False
     SESSION_USER_SIGNER = True
-    SESSION_REDIS = redis.from_url(os.environ["REDIS_URL"]) #Load REDIS_URL from .env
+
+    UPLOAD_FOLDER = 'uploads/'
+    ALLOWED_EXTENSIONS = {'pdf', 'png', 'doc', 'jpg', 'docx', 'txt'}
 
