@@ -3,7 +3,7 @@ from flask_session import Session
 from flask_cors import CORS, cross_origin
 import os
 from werkzeug.utils import secure_filename 
-import base64, binascii
+import binascii
 
 from models import db, Bicycle
 from config import ApplicationConfig
@@ -32,9 +32,12 @@ def allowed_file(filename):
 
 @app.before_request
 def handle_preflight():
-    if request.method == 'POST':
+    if request.method == 'OPTIONS':
         res = Response()
-        res.headers['X-Content-Type-Options'] = '*'
+        res.headers['Access-Control-Allow-Origin'] = '*'  # Adjust to your domain for production
+        res.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+        res.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        res.headers['Access-Control-Max-Age'] = '3600'
         return res
         
 
@@ -53,34 +56,49 @@ def addbicycles():
     model_id = request.form.get("model_id")
     bicycle_pdf = request.files.get("bicycle_pdf")
     
-    if not brand or not model:
-        return jsonify(
-            ({"message": "Missing brand or model"}), 400
-        )
+    if not brand:
+        return({"message": "Missing brand value"}), 400
+    elif not model:
+        return ({"message": "Mssing model value"}), 400
+    elif not model_id:
+        return ({"message": "Missing model id value"}), 400
+    elif not bicycle_pdf:
+        return  jsonify({"message": "Missing bicycle pdf file"}), 400
     
     existing_bicycle = Bicycle.query.filter_by(model_id = model_id).first()
     if existing_bicycle:
             return jsonify({"message": "This bicycle already exists"}), 400
     
     
-    if bicycle_pdf and allowed_file(bicycle_pdf.filename):
-        try:
-            filename = f"{secure_filename(brand)}_{secure_filename(model)}_{secure_filename(model_id)}.{bicycle_pdf.filename.rsplit('.', 1)[1].lower()}"
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if not allowed_file(bicycle_pdf.filename):
+        print("There is no file")
+        return jsonify({"message": "Invalid file type"}), 400
+    
+    if bicycle_pdf is None:
+        print("No file provided")
+        return jsonify({"message": "No file provided"}), 400
 
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            bicycle_pdf.save(file_path)
-        except(binascii.Error, Exception) as e:
-            return jsonify({"message": f"File save failed: {str(e)}"}), 500
-    else:
-        return jsonify({"message": "Invalid file type or no file provided"}), 400
+    
+    try:
+        filename = f"{secure_filename(brand)}_{secure_filename(model)}_{secure_filename(model_id)}.{bicycle_pdf.filename.rsplit('.', 1)[1].lower()}"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        print(f"Savinf file to: {file_path}")
+        bicycle_pdf.save(file_path)
+        print(f"File saved correctly at {file_path}")
+    except(binascii.Error, Exception) as e:
+        return jsonify({"message": f"File save failed: {str(e)}"}), 500
+
         
     new_bicycle = Bicycle(brand = brand, model = model, model_id = model_id, bicycle_pdf = file_path )
     
     try:
         db.session.add(new_bicycle)
         db.session.commit()
+        print(f"Bicycle added: {new_bicycle.to_json()}")
     except Exception as e:
+        print(f"Error adding bicycle: {str(e)}" )
         db.session.rollback()
         return jsonify({"message": str(e)}), 400
 
