@@ -71,12 +71,13 @@ def addbicycles():
     
     
     if not allowed_file(bicycle_pdf.filename):
-        print("There is no file")
         return jsonify({"message": "Invalid file type"}), 400
     
     if bicycle_pdf is None:
-        print("No file provided")
         return jsonify({"message": "No file provided"}), 400
+    
+    if not app.config['UPLOAD_FOLDER']:
+        return jsonify({"message": "Invalid file type"})
 
     
     try:
@@ -84,9 +85,7 @@ def addbicycles():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        print(f"Savinf file to: {file_path}")
         bicycle_pdf.save(file_path)
-        print(f"File saved correctly at {file_path}")
     except(binascii.Error, Exception) as e:
         return jsonify({"message": f"File save failed: {str(e)}"}), 500
 
@@ -96,9 +95,7 @@ def addbicycles():
     try:
         db.session.add(new_bicycle)
         db.session.commit()
-        print(f"Bicycle added: {new_bicycle.to_json()}")
     except Exception as e:
-        print(f"Error adding bicycle: {str(e)}" )
         db.session.rollback()
         return jsonify({"message": str(e)}), 400
 

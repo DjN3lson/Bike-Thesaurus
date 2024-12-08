@@ -25,3 +25,4 @@ dist-ssr
 
 #Untracked Files:
 /BackEnd-Server/.env
+/BackEnd-Server/uploads

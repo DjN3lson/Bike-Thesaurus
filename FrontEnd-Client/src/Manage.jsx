@@ -85,9 +85,9 @@ function Manage() {
                         </thead>
                         <tbody>
                             {bicycles.map((bicycle) => (
-                                <tr key={bicycle.id} onClick={() => changeManage(bicycle)}>
+                                <tr key={bicycle.id}>
                                     <td>{bicycle.id}</td>
-                                    <td>{bicycle.bicycle_pdf}</td>
+                                    <td>{bicycle.bicycle_pdf.split(/[/\\]/).pop()}</td>
                                     <td>{bicycle.brand}</td>
                                     <td>{bicycle.model}</td>
                                     <td>{bicycle.model_id}</td>

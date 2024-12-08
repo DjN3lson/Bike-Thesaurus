@@ -19,6 +19,9 @@ const BicycleList = ({ bicycles }) => {
                     <tr key={bicycle.id}>
                         <td>
                             <a 
+                                href={`/${bicycle.bicycle_pdf}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 style={{
                                     color: 'black', // Set font color to black
                                     cursor: 'pointer', // Change cursor to pointer
@@ -27,7 +30,7 @@ const BicycleList = ({ bicycles }) => {
                                 onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'} 
                                 onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
                             >
-                                {bicycle.bicycle_pdf}
+                                {bicycle.bicycle_pdf.split(/[/\\]/).pop()}
                             </a>
                         </td>
                         <td>{bicycle.brand}</td>
