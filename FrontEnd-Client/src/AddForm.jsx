@@ -9,22 +9,25 @@ const AddForm = ({ closeModal }) => {
     const allowedExtensions = ['pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'];
 
     const addBicycle = async (e) => {
-        e.preventDefault();
-        const data = { brand, model, model_id, bicycle_pdf };
-        const url = "http://localhost:5000/addbicycles";
-        const options = {
-            method: "POST",
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            body: JSON.stringify(data)
-        };
-        const response = await fetch(url, options);
-        if (response.status !== 201 && response.status !== 200) {
-            const message = await response.json();
-            alert(message.message);
-        } else {
-            // Successful addition logic
+        try {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append("brand", brand)
+            formData.append("model", model)
+            formData.append("model_id", model_id)
+            formData.append("bicycle_pdf", bicycle_pdf)
+            const url = "http://localhost:5000/addbicycle";
+            const options = {
+                method: "POST",
+                body: FormData
+            };
+            const response = await fetch(url, options);
+            if (response.status == 201 && response.status == 200) {
+                const message = await response.json();
+                console.log(message)
+            } 
+        } catch (error) {
+            console.log("Error in addition of bicycle", error)
         }
         closeModal(); // Close the modal after submission
     };
