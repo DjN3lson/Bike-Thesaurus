@@ -9,25 +9,36 @@ const AddForm = ({ closeModal }) => {
     const allowedExtensions = ['pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'];
 
     const addBicycle = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('brand', brand)
+        formData.append('model', model)
+        formData.append('model_id', model_id)
+        formData.append('bicycle_pdf', bicycle_pdf)
+        const url = "http://localhost:5000/addbicycle";
+        const options = {
+            method: "POST",
+            body: formData
+        };
         try {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append("brand", brand)
-            formData.append("model", model)
-            formData.append("model_id", model_id)
-            formData.append("bicycle_pdf", bicycle_pdf)
-            const url = "http://localhost:5000/addbicycle";
-            const options = {
-                method: "POST",
-                body: FormData
-            };
             const response = await fetch(url, options);
-            if (response.status == 201 && response.status == 200) {
+            if (response.ok) { 
                 const message = await response.json();
-                console.log(message)
-            } 
+                console.log(message);
+            } else {
+                console.error(`HTTP error! status: ${response.status}`);
+                
+                if (response.status === 400) {
+                  try {
+                    const errorData = await response.json();
+                    console.error("Server Error Details:", errorData);
+                  } catch (error) {
+                    console.error("Failed to parse error response:", error);
+                  }
+                }
+            }
         } catch (error) {
-            console.log("Error in addition of bicycle", error)
+            console.error("Error in addition of bicycle", error);
         }
         closeModal(); // Close the modal after submission
     };
