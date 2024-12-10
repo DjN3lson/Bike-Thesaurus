@@ -35,21 +35,21 @@ const AddForm = ({ closeModal }) => {
             const response = await fetch(url, options);
             if (response.ok) { 
                 const message = await response.json();
-                console.log(message);
+                alert(message.message)
             } else {
                 console.error(`HTTP error! status: ${response.status}`);
                 
                 if (response.status === 400) {
                   try {
                     const errorData = await response.json();
-                    console.error("Server Error Details:", errorData);
+                    alert("Server Error Details:", errorData);
                   } catch (error) {
-                    console.error("Failed to parse error response:", error);
+                    alert("Failed to parse error response:", error);
                   }
                 }
             }
         } catch (error) {
-            console.error("Error in addition of bicycle", error);
+            alert("Error in addition of bicycle", error);
         }
         fetchBicycles();
         closeModal(); // Close the modal after submission

@@ -32,7 +32,7 @@ const EditForm = ({closeModal, bicycle = {}}) => {
         formData.append('model_id', model_id)
         if(bicycle_pdf){
             formData.append('bicycle_pdf', bicycle_pdf)
-        }
+        };
         const url = `http://localhost:5000/editbicycle/${bicycle.id}`
         const options = {
             method: bicycle.id ? "PATCH" : "POST",
@@ -48,7 +48,7 @@ const EditForm = ({closeModal, bicycle = {}}) => {
                 alert("Bicycle has been updated")
             }
         }catch(error){
-            console.error("Error updating bicycle", error)
+            alert("Error: ", error)
         }
         closeModal();
         fetchBicycles();
