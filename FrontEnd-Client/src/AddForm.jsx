@@ -1,12 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+import "./css/addform.css"
+
 const AddForm = ({ closeModal }) => {
     const [brand, setBrand] = useState("");
     const [model, setModel] = useState("");
     const [model_id, setModel_id] = useState("");
     const [bicycle_pdf, setBicycle_pdf] = useState("");
     const allowedExtensions = ['pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'];
+
+    const fetchBicycles = async () => {
+        try {
+            const bicycle = await axios.get("http://localhost:5000/bicycles");
+            setBicycles(bicycle.data.bicycles);
+        } catch (error) {
+            console.error("Error fetching bicycles", error);
+        }
+    };
 
     const addBicycle = async (e) => {
         e.preventDefault();
@@ -40,7 +51,9 @@ const AddForm = ({ closeModal }) => {
         } catch (error) {
             console.error("Error in addition of bicycle", error);
         }
+        fetchBicycles();
         closeModal(); // Close the modal after submission
+        
     };
 
     return (

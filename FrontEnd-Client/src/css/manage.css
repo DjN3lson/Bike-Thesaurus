@@ -35,6 +35,7 @@ html, body {
     width: 100%; /* Ensure the table container takes full width */
 }
 
+
 .table-scroll {
     max-height: auto; /* Set a maximum height for the table container */
     overflow-y: auto; /* Enable vertical scrolling */

@@ -35,7 +35,7 @@ def handle_preflight():
     if request.method == 'OPTIONS':
         res = Response()
         res.headers['Access-Control-Allow-Origin'] = '*'  # Adjust to your domain for production
-        res.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+        res.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, PATCH'
         res.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         res.headers['Access-Control-Max-Age'] = '3600'
         return res
@@ -110,18 +110,13 @@ def updatebicycle(bicycle_id):
     if not bicycle:
         return jsonify({"message": "Bicycle not found"})
     
-    data = request.json or request.form
+    data = request.form
     brand = data.get("brand", bicycle.brand)
     model = data.get("model", bicycle.model)
     model_id = data.get("model_id", bicycle.model_id)
-   
-
-    if model_id != bicycle.model_id:
-        existing_bicycle = Bicycle.query.filter_by(model_id = model_id)
-        if existing_bicycle:
-            return jsonify({"message": "Model ID already in use"}), 400
 
     bicycle_pdf = request.files.get("bicycle_pdf")
+
     if bicycle_pdf and allowed_file(bicycle_pdf.filename):
         try:
             filename = f"{secure_filename(brand)}_{secure_filename(model)}_{secure_filename(model_id)}.{bicycle_pdf.filename.rsplit('.', 1)[1].lower()}"
@@ -133,7 +128,8 @@ def updatebicycle(bicycle_id):
                 os.remove(bicycle.bicycle_pdf)
             
             bicycle_pdf.save(file_path)
-        except (binascii.Error, Exception) as e:
+            bicycle.bicycle_pdf = file_path
+        except (Exception) as e:
             return jsonify({"message": f"File save failed: {str(e)}"}),500
     
     bicycle.brand = brand
