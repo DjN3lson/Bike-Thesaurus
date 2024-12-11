@@ -9,11 +9,6 @@ import BicycleList from './BicycleList.jsx';
 
 function App() {
 
-  const BicycleApi = async () => {
-        const response = await fetch("http://localhost:5000/bicycles");
-    }
-
-
   return (
     <>
 
@@ -24,9 +19,9 @@ function App() {
           </div>
         </header>
         <Routes>
-        <Route path="/" element={<Searchbar />} />
+          <Route path="/" element={<Searchbar />} />
           <Route path="manage" element={<Manage />} />
-          <Route path="/bicycles" element={<BicycleList bicycles={bicycle.bicycle_pdf} />} />
+          <Route path="/bicycles" element={<BicycleList />} />
         </Routes>
       </div>
     </>

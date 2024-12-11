@@ -33,6 +33,7 @@ const BicycleList = ({ bicycles }) => {
                     <tr key={bicycle.id}>
                         <td>
                             <a
+                            href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     openModal(bicycle.bicycle_pdf)

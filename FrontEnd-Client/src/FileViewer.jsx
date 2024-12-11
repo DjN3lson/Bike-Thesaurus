@@ -11,7 +11,7 @@ const FileViewer = ({closeModal, bicycle_pdf}) => {
                 <div className="pdf-container">
                     <span className="close" onClick={closeModal}>&times;</span>
                     <iframe
-                    src={`./{bicycle_pdf}`}
+                    src={bicycle_pdf}
                     width="100%"
                     height="600px"
                     title="PDF Viewer"

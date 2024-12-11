@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, Response
+from flask import Flask, jsonify, request, session, Response, send_from_directory
 from flask_session import Session
 from flask_cors import CORS
 import os
@@ -45,8 +45,18 @@ def handle_preflight():
 def listbicycles():
     all_bicycles = Bicycle.query.all()
     print(all_bicycles)
-    json_bicycles = list(map(lambda x: x.to_json(), all_bicycles))
+    # json_bicycles = list(map(lambda x: x.to_json(), all_bicycles))
+    json_bicycles = [{
+        **b.to_json(),
+        "bicycle_pdf":f"/uploads/{os.path.basename(b.bicycle_pdf)}"
+    }
+    for b in all_bicycles
+    ]
     return jsonify ({"bicycles": json_bicycles})
+
+@app.route("/uploads/<path:filename>")
+def serve_pdf(filename):
+    return send_from_directory('uploads', filename)
 
 
 @app.route("/addbicycle", methods=["POST"])
