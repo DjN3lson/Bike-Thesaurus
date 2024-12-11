@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 
-import BicycleList from "./BicycleList";
 import './css/Searchbar.css';
-
+import BicycleList from "./BicycleList";
 
 function Searchbar() {
     const [bicycles, setBicycles] = useState([]);
     const [filteredBicycles, setFilteredBicycles] = useState([]);
+    
 
     const fetchAPI = async () => {
         try {

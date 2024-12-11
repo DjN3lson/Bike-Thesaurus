@@ -15,6 +15,7 @@ class ApplicationConfig():
     SESSION_PERMANENT = False
     SESSION_USER_SIGNER = True
 
-    UPLOAD_FOLDER = os.path.abspath('./uploads/')
+    FRONTEND_PUBLIC_FOLDER = os.path.abspath('../FrontEnd-Client/public/uploads')
+    UPLOAD_FOLDER = FRONTEND_PUBLIC_FOLDER
     ALLOWED_EXTENSIONS = {'pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'}
 

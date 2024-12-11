@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import PdfViewer from "./FileViewer";
 
 
 
 const BicycleList = ({ bicycles }) => {
+    
+    const [window, setWindow] = useState(false)
+    const [selectBicyclePdf, setSelectedBicyclePdf] = useState(null)
+    
+    
+    const openModal = (bicycle_pdf) => {
+        setSelectedBicyclePdf(bicycle_pdf)
+        setWindow(true);
+    }
+    const closeModal = () => {
+        setSelectedBicyclePdf(null)
+        setWindow(false)
+    }
     return <div>
         <table>
             <thead>
@@ -18,16 +32,19 @@ const BicycleList = ({ bicycles }) => {
                 {bicycles.map((bicycle) => (
                     <tr key={bicycle.id}>
                         <td>
-                            <a 
-                                href={`/${bicycle.bicycle_pdf}`}
+                            <a
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    openModal(bicycle.bicycle_pdf)
+                                }}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
                                     color: 'black', // Set font color to black
                                     cursor: 'pointer', // Change cursor to pointer
                                     textDecoration: 'none' // Remove default underline
-                                }} 
-                                onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'} 
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
                                 onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
                             >
                                 {bicycle.bicycle_pdf.split(/[/\\]/).pop()}
@@ -41,6 +58,9 @@ const BicycleList = ({ bicycles }) => {
                 ))}
             </tbody>
         </table>
+        {window && selectBicyclePdf && (
+            <PdfViewer closeModal={closeModal} bicycle_pdf={selectBicyclePdf} />
+        )}
     </div>
 }
 

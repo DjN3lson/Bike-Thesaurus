@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, request, session, Response, make_response
+from flask import Flask, jsonify, request, session, Response
 from flask_session import Session
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename 
 import binascii
@@ -142,7 +142,6 @@ def updatebicycle(bicycle_id):
         db.session.rollback()
         return jsonify({"message": f"Database error: {str(e)}"}),500
     return jsonify({ "message": "Bicycle updated"}), 201
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

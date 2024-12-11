@@ -1,0 +1,38 @@
+/* fileviewer.css */
+.pdf-page {
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+    position: fixed; /* Fixed position to cover the entire screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark transparent background */
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.pdf-container {
+    width: 50%; /* Set maximum width to 1/3 of the screen */
+    height: auto; /* Allow height to adjust based on content */
+    background-color: white; /* Background color for the PDF container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
+    position: relative; /* Position relative for close button */
+    padding: 20px; /* Padding around the content */
+}
+
+.close {
+    color: #aaa;
+    position: absolute; /* Position absolute to place it in the top right */
+    top: 10px; /* Distance from the top */
+    right: 15px; /* Distance from the right */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+.close:hover,
+.close:focus {
+    color: rgb(255, 255, 255); /* Change color on hover/focus */
+    text-decoration: none; /* Remove underline */
+}

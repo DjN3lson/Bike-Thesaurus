@@ -4,7 +4,7 @@
   width: 100vw;  /* Full width of the viewport */
   background-color: white;
   color: black;
-  border: 2px solid yellow;
+  
   box-sizing: border-box; /* Ensures padding and borders are included in width/height */
   overflow-y: hidden; /* Add scroll if content overflows */
   overflow-x: auto;
