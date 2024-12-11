@@ -32,7 +32,9 @@ const EditForm = ({closeModal, bicycle = {}}) => {
         formData.append('model_id', model_id)
         if(bicycle_pdf){
             formData.append('bicycle_pdf', bicycle_pdf)
-        };
+        }else{
+            formData.append('bicycle_pdf', null)
+        }
         const url = `http://localhost:5000/editbicycle/${bicycle.id}`
         const options = {
             method: bicycle.id ? "PATCH" : "POST",
@@ -75,7 +77,7 @@ const EditForm = ({closeModal, bicycle = {}}) => {
                 </div>
                 <div>
                     <label>Upload PDF: </label>
-                    <input type="file" name="bicycle_pdf" id="bicycle_pdf" value={bicycle_pdf} onChange={(e) => setBicycle_pdf(e.target.files[0])} accept={allowedExtensions.map(ext => `.${ext}`).join(',')}/>
+                    <input type="file" name="bicycle_pdf" id="bicycle_pdf"  onChange={(e) => setBicycle_pdf(e.target.files[0])} accept={allowedExtensions.map(ext => `.${ext}`).join(',')}/>
                 </div>
                 <button type="submit">Update Bicycle</button>
             </form>

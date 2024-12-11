@@ -86,17 +86,33 @@ def addbicycles():
     if bicycle_pdf is None:
         return jsonify({"message": "No file provided"}), 400
     
-    if not app.config['UPLOAD_FOLDER']:
+    if not app.config['ALLOWED_EXTENSIONS']:
         return jsonify({"message": "Invalid file type"})
 
     
     try:
-        filename = f"{secure_filename(brand)}_{secure_filename(model)}_{secure_filename(model_id)}.{bicycle_pdf.filename.rsplit('.', 1)[1].lower()}"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        from PyPDF2 import PdfReader, PdfWriter
+        pdf_reader = PdfReader(bicycle_pdf)
+        pdf_writer = PdfWriter()
+
+        for page in pdf_reader:
+            pdf_writer.add_page(page)
+
+        new_title = f"{brand}_{model}_{model_id}"
+        pdf_writer.add_metadata({
+            '/Title':new_title
+        })    
+
+        new_filename = f"s{secure_filename(new_title)}.pdf"
+        
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
 
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        bicycle_pdf.save(file_path)
-    except(binascii.Error, Exception) as e:
+        with open(file_path, 'wb') as output_file:
+            pdf_writer.write(output_file)
+        
+
+    except(Exception) as e:
         return jsonify({"message": f"File save failed: {str(e)}"}), 500
 
         
