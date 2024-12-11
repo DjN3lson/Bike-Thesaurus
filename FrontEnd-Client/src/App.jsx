@@ -1,11 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 
 import Manage from './Manage.jsx';
-
 import Searchbar from './Searchbar';
 import Navbar from './Navbar';
-import './css/App.css'
 import BicycleList from './BicycleList.jsx';
+
+// import Configuration from '.Configuration.jsx;
+
+import './css/App.css'
 
 function App() {
 
@@ -22,6 +24,7 @@ function App() {
           <Route path="/" element={<Searchbar />} />
           <Route path="manage" element={<Manage />} />
           <Route path="/bicycles" element={<BicycleList />} />
+          {/* Route path="/configuration" element={<Configuration />} />*/}
         </Routes>
       </div>
     </>
