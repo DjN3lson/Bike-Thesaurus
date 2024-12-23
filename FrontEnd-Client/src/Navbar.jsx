@@ -13,11 +13,10 @@ function Navbar() {
             <div className="navbar">
                 <nav>
                     <ul>
-                        <li> <Link to="/" className="home-button">Home</Link> </li>
+                        <li> <Link to="/home" className="home-button">Home</Link> </li>
                         <li> <Link to="/manage" className="manage-button">Manage</Link> </li>
                         <li>  <Link to="/configuration" className="configuration button">Configuration</Link></li>
                     </ul>
-
                 </nav>
             </div>
         </>

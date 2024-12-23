@@ -1,63 +1,39 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Style for the index container */
+.index-container {
+    position: absolute; /* Use absolute positioning */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust position to truly center */
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    background-size: cover; /* Cover the entire container */
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
 }
 
-a {
-  font-weight: 500;
-  color: white;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* Style for the logo */
+.logo {
+    max-width: 100%; /* Responsive logo */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Space between logo and button */
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  width: auto;
-  height: auto;
+/* Style for the button */
+.index-container button {
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent white background */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding for the button */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
+/* Button hover effect */
+.index-container button:hover {
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
-.container{
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.navbar{
-  width: 200px;
-  background-color: #333;
-}
-
-.app{
-  flex: 1;
-  overflow-x: hidden;
-
+    background-color: rgb(91, 90, 90); /* Fully opaque on hover */
+    color: red;
 }

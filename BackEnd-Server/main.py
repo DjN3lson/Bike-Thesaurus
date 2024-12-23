@@ -3,25 +3,21 @@ from flask_session import Session
 from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename 
-import binascii
+
 
 from models import db, Bicycle
 from config import ApplicationConfig
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='build')
 CORS(app, supports_credentials=True)
 
 app.config.from_object(ApplicationConfig)
 
 db.init_app(app)
 
-
-
 with app.app_context(): 
     db.create_all() #This creates the table
-
-
 
 server_session = Session(app)
 
@@ -39,13 +35,17 @@ def handle_preflight():
         res.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         res.headers['Access-Control-Max-Age'] = '3600'
         return res
-        
+
+
+@app.route("/")
+def index():
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route("/bicycles", methods=["GET"])
 def listbicycles():
     all_bicycles = Bicycle.query.all()
     print(all_bicycles)
-    # json_bicycles = list(map(lambda x: x.to_json(), all_bicycles))
+    
     json_bicycles = [{
         **b.to_json(),
         "bicycle_pdf":f"/uploads/{os.path.basename(b.bicycle_pdf)}"
@@ -63,7 +63,7 @@ def serve_pdf(filename):
 def addbicycles():
     brand = request.form.get("brand")
     model = request.form.get("model")
-    model_id = request.form.get("model_id")
+    model_id = request.form.get("model_id") or "0000"
     bicycle_pdf = request.files.get("bicycle_pdf")
     
     if not brand:
@@ -89,29 +89,14 @@ def addbicycles():
     if not app.config['ALLOWED_EXTENSIONS']:
         return jsonify({"message": "Invalid file type"})
 
-    
     try:
-        from PyPDF2 import PdfReader, PdfWriter
-        pdf_reader = PdfReader(bicycle_pdf)
-        pdf_writer = PdfWriter()
-
-        for page in pdf_reader:
-            pdf_writer.add_page(page)
-
-        new_title = f"{brand}_{model}_{model_id}"
-        pdf_writer.add_metadata({
-            '/Title':new_title
-        })    
-
-        new_filename = f"s{secure_filename(new_title)}.pdf"
-        
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+        original_file = secure_filename(bicycle_pdf.filename)    
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], original_file)
 
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        with open(file_path, 'wb') as output_file:
-            pdf_writer.write(output_file)
         
-
+        bicycle_pdf.save(file_path)
+    
     except(Exception) as e:
         return jsonify({"message": f"File save failed: {str(e)}"}), 500
 
@@ -139,7 +124,7 @@ def updatebicycle(bicycle_id):
     data = request.form
     brand = data.get("brand", bicycle.brand)
     model = data.get("model", bicycle.model)
-    model_id = data.get("model_id", bicycle.model_id)
+    model_id = data.get("model_id", bicycle.model_id) or ("model_id", "0000")
 
     bicycle_pdf = request.files.get("bicycle_pdf")
 
