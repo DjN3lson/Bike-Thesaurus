@@ -5,12 +5,12 @@ import os
 from werkzeug.utils import secure_filename 
 
 
-from models import db, Bicycle
+from models import db, Bicycle, BicyclePdfs
 from config import ApplicationConfig
 
 
 app = Flask(__name__, static_folder='build')
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, )
 
 app.config.from_object(ApplicationConfig)
 
@@ -43,16 +43,12 @@ def index():
 
 @app.route("/bicycles", methods=["GET"])
 def listbicycles():
-    all_bicycles = Bicycle.query.all()
-    print(all_bicycles)
-    
-    json_bicycles = [{
-        **b.to_json(),
-        "bicycle_pdf":f"/uploads/{os.path.basename(b.bicycle_pdf)}"
-    }
-    for b in all_bicycles
-    ]
-    return jsonify ({"bicycles": json_bicycles})
+    try:
+        all_bicycles = Bicycle.query.all()
+        json_bicycles = [b.to_json() for b in all_bicycles]
+        return jsonify ({"bicycles": json_bicycles}),200
+    except Exception as e:
+        return jsonify({"message": f"error in printing the bicycles {str(e)}"}),500
 
 @app.route("/uploads/<path:filename>")
 def serve_pdf(filename):
@@ -153,6 +149,22 @@ def updatebicycle(bicycle_id):
         db.session.rollback()
         return jsonify({"message": f"Database error: {str(e)}"}),500
     return jsonify({ "message": "Bicycle updated"}), 201
+
+@app.route("/deletebicycle/<bicycle_id>", methods=["DELETE", "OPTIONS"])
+def deletebicycle(bicycle_id):
+    bicycle = Bicycle.query.get(bicycle_id)
+    
+    if bicycle is None:
+        return jsonify({"message": "Bicycle was not found"}),404
+    
+    try:
+        db.session.delete(bicycle)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Deletion error: {str(e)}"}),500
+    return jsonify({"messsage": "Bicycle was deleted successfully"}),201
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

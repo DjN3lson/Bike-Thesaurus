@@ -17,6 +17,7 @@ function Manage() {
     const [addFormOpen, setAddFormOpen] = useState(false)
     const [editFormOpen, setEditFormOpen] = useState(false)
     const [selectedBicycle, setSelectedBicycle] = useState(null)
+    
 
     const openEditForm = (bicycle) => {
         setSelectedBicycle(bicycle)
@@ -72,7 +73,9 @@ function Manage() {
                                     <td>{bicycle.brand}</td>
                                     <td>{bicycle.model}</td>
                                     <td>{bicycle.model_id}</td>
-                                    <td><button onClick={() => openEditForm(bicycle)}>Edit</button>
+                                    <td>
+                                        <button onClick={() => openEditForm(bicycle)}>Edit</button>
+                                        <button onClick={() => deleteBicycle(bicycle)}>Delete</button>
                                     </td>
                                 </tr>
                             ))}
