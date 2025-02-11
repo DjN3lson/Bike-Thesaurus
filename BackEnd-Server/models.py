@@ -30,16 +30,29 @@ class BicyclePdfs(db.Model):
     bicycle_id = db.Column(db.Integer, db.ForeignKey('bicycles.id'), unique=False)
     bicycle_pdf = db.Column(db.String(255), unique=False)
 
-# class BicycleParts(db.Model):
-#     __tablename__= "bicycleparts"
-#     id = db.Column(db.Integer, primary_key=True)
-#     bicycle_id = db.Column(db.Integer, db.ForeignKey('bicycles.model_id'), unique=False)
-#     name = db.Column(db.String(255), index=True, unique=False)
-#     model_name = db.Column(db.String(255), index=True, unique=False)
-#     part_id = db.Column(db.Integer, index=True, unique=False)
+class BicycleParts(db.Model):
+    __tablename__= "bicycleparts"
+    id = db.Column(db.Integer, primary_key=True)
+    bicycle_id = db.Column(db.Integer, db.ForeignKey('bicycles.model_id'), unique=False)
+    part_id = db.Column(db.Integer, index=True, unique=False)
+    name = db.Column(db.String(255), index=True, unique=False)
+    part_model_name = db.Column(db.String(255), index=True, unique=False)
+    parts_pdfs = db.relationship('PartPdfs', backref='BicycleParts', lazy='dynamic')
 
-# class PartPdfs(db.Model):
-#     __tablename__="partpdfs"
-#     id = db.Column(db.Integer, primary_key=True)
-#     part_id = db.Column(db.Intefer, db.ForeignKey('bicycleparts.'))
+    def to_json(self):
+        return{
+            "id" : self.id,
+            "bicycle_id": self.bicycle_id,
+            "part_model_id": self.part_id,
+            "name": self.name,
+            "part_model_name": self.part_model_name,
+            "pdfs": [pdf.part_pdf for pdf in self.pdfs]
+        }
+    
+
+class PartPdfs(db.Model):
+    __tablename__="partpdfs"
+    id = db.Column(db.Integer, primary_key=True)
+    part_id = db.Column(db.Integer, db.ForeignKey('bicycleparts.id'), unique=False)
+    part_pdf = db.Column(db.String(255), unique=False)
 

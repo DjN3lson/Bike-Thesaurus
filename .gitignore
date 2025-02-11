@@ -26,3 +26,4 @@ dist-ssr
 #Untracked Files:
 /BackEnd-Server/.env
 /BackEnd-Server/uploads
+./Relationships_Models.drawio

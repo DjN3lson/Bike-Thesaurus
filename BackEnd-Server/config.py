@@ -10,7 +10,7 @@ class ApplicationConfig():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URI"] #Load DATABASE_URI from .env
-    #configuration for MySQL
+    
     SESSION_TYPE = "filesystem"
     SESSION_PERMANENT = False
     SESSION_USER_SIGNER = True
