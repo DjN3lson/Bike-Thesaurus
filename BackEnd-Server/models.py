@@ -34,7 +34,7 @@ class BicycleParts(db.Model):
     __tablename__= "bicycleparts"
     id = db.Column(db.Integer, primary_key=True)
     bicycle_id = db.Column(db.Integer, db.ForeignKey('bicycles.model_id'), unique=False)
-    part_id = db.Column(db.Integer, index=True, unique=False)
+    part__model_id = db.Column(db.Integer, index=True, unique=False)
     name = db.Column(db.String(255), index=True, unique=False)
     part_model_name = db.Column(db.String(255), index=True, unique=False)
     parts_pdfs = db.relationship('PartPdfs', backref='BicycleParts', lazy='dynamic')

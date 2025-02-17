@@ -84,17 +84,15 @@ def addbicycles():
         return jsonify({"message": "No file provided"}), 400
     
     if not app.config['ALLOWED_EXTENSIONS']:
-        return jsonify({"message": "Invalid file type"})
+        return jsonify({"message": "Invalid file type"}), 400
     
-    if bicycle_folder is None:
-        bicycle_folder = os.path.join(app.config['UPLOAD_FOLDER'], 'Bicycles')
-        os.makedirs(bicycle_folder, exist_ok=True)
+    
+    bicycle_upload_folder = app.config['BICYCLE_FOLDER']
+    os.makedirs(bicycle_upload_folder, exist_ok=True)
 
     try:
         original_file = secure_filename(bicycle_pdf.filename)    
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], original_file)
-
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        file_path = os.path.join(bicycle_upload_folder, original_file)
         
         bicycle_pdf.save(file_path)
     
@@ -127,16 +125,20 @@ def updatebicycle(bicycle_id):
     model = data.get("model", bicycle.model)
     model_id = data.get("model_id", bicycle.model_id) or ("model_id", "0000")
 
+
     bicycle_pdf = request.files.get("pdfs")
+
+   
 
     if bicycle_pdf and allowed_file(bicycle_pdf.filename):
         try:
-            filename = f"{secure_filename(brand)}_{secure_filename(model)}_{secure_filename(model_id)}.{bicycle_pdf.filename.rsplit('.', 1)[1].lower()}"
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            bicycle_upload_folder = app.config['BICYCLE_FOLDER']
+            os.makedirs(bicycle_upload_folder, exist_ok=True)
 
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            original_file = secure_filename(bicycle_pdf.filename)
+            file_path = os.path.join(bicycle_upload_folder, original_file)
 
-            if bicycle.bicycle_pdf and os.path.exists(bicycle.bicycle_pdf):
+            if bicycle.bicyle_pdf and os.path.exists(bicycle.bicycle_pdf):
                 os.remove(bicycle.bicycle_pdf)
             
             bicycle_pdf.save(file_path)
@@ -184,7 +186,7 @@ def listParts():
 def addBicycleParts():
     data = request.form
     bicycle_id = data.get("bicycle_id")
-    part_id = data.get("part_id")
+    part_model_id = data.get("part_id")
     name = data.get("name")
     part_model_name = data.get("part_model_name")
     parts_pdf = request.files.get("pdfs")
@@ -193,15 +195,45 @@ def addBicycleParts():
         return jsonify({"message": "Missing name"}), 400
     elif not bicycle_id:
         return jsonify({"message": "Missing bicycle_id"}), 400
-    elif not part_id:
-        return jsonify({"message": "Missing part_id"}), 400
+    elif not part_model_id:
+        return jsonify({"message": "Missing model id"}), 400
     elif not part_model_name:
-        return jsonify({"message": "Missing Part Model Name"}), 400
+        return jsonify({"message": "Missing part model ame"}), 400
     
-    existing_part = BicycleParts.query.filter_by(part_id = part_id).first()
+    existing_part = BicycleParts.query.filter_by(part_id = part_model_id).first()
+
     if existing_part:
         return jsonify({"message": "This bicycle part already exists"}), 400
     
+    if not allowed_file(parts_pdf.filename):
+        return jsonify({"message": "Invalid file type"}), 400
+    if parts_pdf is None:
+        return jsonify({"message": "No file provided"}), 400
+    if not app.config['ALLOWED_EXTENSIONS']:
+        return jsonify({"message": "Invalid file type"}), 400
+    part_upload_folder = app.config['PARTS_FOLDER']
+    os.makedirs(part_upload_folder, exist_ok=True)
+
+    try:
+        original_file = secure_filename(parts_pdf.filename)
+        file_path = os.path.join(part_upload_folder, original_file)
+
+        parts_pdf.save(file_path)
+    except (Exception) as e:
+        return jsonify({"message": f"file save failed: {str(e)}"}), 500
+    
+    new_part = BicycleParts(bicycle_id = bicycle_id, part_model_id = part_model_id, name = name, part_model_name = part_model_name, parts_pdf = parts_pdf)
+
+    try:
+        db.session.add(new_part)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}),400
+    return jsonify({
+        "message": f"Bicycle {new_part.id} has been added"
+    }), 201
+
 @app.route ("/editbicyclepart/<int:bicycle_part_id", methods=["PATCH"])
 def updatebicyclepart(bicycle_part_id):
     part = BicycleParts.query.get(bicycle_part_id)
