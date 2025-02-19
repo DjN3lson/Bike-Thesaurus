@@ -234,7 +234,7 @@ def addBicycleParts():
         "message": f"Bicycle {new_part.id} has been added"
     }), 201
 
-@app.route ("/editbicyclepart/<int:bicycle_part_id", methods=["PATCH"])
+@app.route ("/editbicyclepart/<int:bicycle_part_id>", methods=["PATCH"])
 def updatebicyclepart(bicycle_part_id):
     part = BicycleParts.query.get(bicycle_part_id)
     
