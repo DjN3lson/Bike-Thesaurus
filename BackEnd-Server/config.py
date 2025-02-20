@@ -19,5 +19,6 @@ class ApplicationConfig():
     UPLOAD_FOLDER = FRONTEND_PUBLIC_FOLDER
     BICYCLE_FOLDER = os.path.join(UPLOAD_FOLDER, 'bicycles')
     PARTS_FOLDER = os.path.join(UPLOAD_FOLDER, 'parts')
+    
     ALLOWED_EXTENSIONS = {'pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'}
 

@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request, session, Response, send_from_director
 from flask_session import Session
 from flask_cors import CORS
 import os
-from werkzeug.utils import secure_filename 
+from werkzeug.utils import secure_filename
+import shutil
 
 
 from models import db, Bicycle, BicyclePdfs, BicycleParts
@@ -185,17 +186,39 @@ def updatebicycle(bicycle_id):
 def deletebicycle(bicycle_id):
     bicycle = Bicycle.query.get(bicycle_id)
     
+    data = request.form
+    
+    brand = data.get("brand", bicycle.brand)
+    model = data.get("model", bicycle.model)
+    model_id = data.get("model_id", bicycle.model_id)
+    
+    
     if bicycle is None:
-        
         return jsonify({"message": "Bicycle was not found" }),404
     
+    current_folder = os.path.join(app.config['BICYCLE_FOLDER'], f"{brand}_{model}_{model_id}")
+    
+    print(f"Folder path: {current_folder}")
+    print(current_folder)
+    
+
     try:
         db.session.delete(bicycle)
         db.session.commit()
+
+        if os.path.exists(current_folder):
+            print("Folder exists, proceeding to delete.")
+            shutil.rmtree(current_folder) 
+            print("Folder deleted successfully.")
+        else:
+            print("Folder does not exist.")
+        
+        return jsonify({"message": "Bicycle and Folder was deleted sucessfully "}), 200
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": f"Deletion error: {str(e)}"}),500
-    return jsonify({"messsage": "Bicycle was deleted successfully"}),201
+        return jsonify({"message": f"Bicycle deleted failed: {str(e)}"}),500
+   
 
 @app.route("/bicyclepartslist", methods=["GET"])
 def listParts():
