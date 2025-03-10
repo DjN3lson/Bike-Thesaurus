@@ -27,3 +27,4 @@ dist-ssr
 /BackEnd-Server/.env
 /BackEnd-Server/uploads
 ./Relationships_Models.drawio
+/FrontEnd-Client/public/uploads

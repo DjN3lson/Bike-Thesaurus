@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, Response, send_from_directory
+from flask import Flask, jsonify, request, session, Response, send_from_directory 
 from flask_session import Session
 from flask_cors import CORS
 import os
@@ -14,6 +14,7 @@ app = Flask(__name__, static_folder='build')
 CORS(app, supports_credentials=True, )
 
 app.config.from_object(ApplicationConfig)
+
 
 db.init_app(app)
 
@@ -71,7 +72,7 @@ def addbicycles():
     elif not bicycle_pdf_files:
         return jsonify({"message": "Missing bicycle pdf files"}), 400
     
-    existing_bicycle = Bicycle.query.filter_by(id = id).first()
+    existing_bicycle = Bicycle.query.filter_by(brand = brand, model = model).first()
     
     if existing_bicycle:
         return jsonify({"message": "This bicycle already exists"}), 400
@@ -108,7 +109,7 @@ def addbicycles():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": f"Error: {str(e)}"}), 500
+        return jsonify({"message": f"Error in the addition of new bicycles: {str(e)}"}), 500
 
     return jsonify({"message": f"Bicycle {new_bicycle.id} added successfully"}), 201
 
@@ -196,9 +197,9 @@ def listParts():
     try:
         parts = BicycleParts.query.all()
         json_parts = [b.to_json() for b in parts]
-        return jsonify ({"bicycles": json_parts}),200
+        return jsonify ({"bicycle parts": json_parts}),200
     except Exception as e:
-        return jsonify({"message": f"error in printing the bicycles {str(e)}"}),500
+        return jsonify({"message": f"error in printing the bicycles parts {str(e)}"}),500
 
 @app.route("/addbicycleparts", methods=["POST"])
 def addBicycleParts():
@@ -206,9 +207,11 @@ def addBicycleParts():
     brand = data.get("brand")
     model_name = data.get("model_name")
     component_type = data.get("component_type")
-    compatible = data.get("compatible_bicycle")
-
     part_pdfs = request.files.getlist("parts_pdf")
+
+    existing_part = BicycleParts.query.filter_by(brand=brand,model_name=model_name, component_type = component_type ).first()
+    if existing_part:
+        return jsonify({"message": "Part already exists"}), 400
 
     if not brand:
         return ({"message": "Missing brand value"}), 400
@@ -216,8 +219,6 @@ def addBicycleParts():
         return ({"message": "Missing model_name value"}), 400
     elif not component_type:
         return ({"message": "Missing component_type value"}), 400
-    elif not compatible:
-        return ({"message": "Missing compatible value"}), 400
     elif not part_pdfs:
         return ({"message": "Missing part_pdfs value"}), 400
     
@@ -234,11 +235,12 @@ def addBicycleParts():
         for pdf_file in part_pdfs:
             if not allowed_file(pdf_file.filename):
                 return jsonify({"message": "Invalid file type"}),400
+            
             filename = secure_filename(pdf_file.filename) 
             file_path = os.path.join(part_folder, filename)
             pdf_file.save(file_path)
 
-            new_pdf = PartPdfs(part_pdf=file_path)
+            new_pdf = PartPdfs(part_pdf=file_path, part = new_part)
             parts_pdf_instances.append(new_pdf)
 
 
@@ -246,14 +248,15 @@ def addBicycleParts():
         for pdf_instance in parts_pdf_instances:
             db.session.add(pdf_instance)
         db.session.commit()
+   
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Error in the addition of part: {str(e)}"}),500
+   
     return jsonify({
-        "message": f"Bicycle part has been added"
-    }), 201
+        "message": f"Bicycle part {new_part.id} has been added"}), 201
 
-@app.route ("/editbicyclepart/<int:bicycle_id>", methods=["PATCH"])
+@app.route ("/editbicyclepart/<int:id>", methods=["PATCH"])
 def updatebicyclepart(bicycle_part_id):
     part = BicycleParts.query.get(bicycle_part_id)
     
@@ -268,7 +271,7 @@ def updatebicyclepart(bicycle_part_id):
     new_bicycle_part_pdf = request.files.getlist("part_pdfs")
     
     try:
-        if any ([new_brand != part.brand, new_model_name != part.model_name, new_component_type != part.component_part]):
+        if any([new_brand != part.brand, new_model_name != part.model_name, new_component_type != part.component_type]):
 
             old_folder = os.path.join(app.config['PARTS_FOLDER'], f"{part.brand}_{part.model_name}_ {part.component_type}")
             new_folder = os.path.join(app.config['PARTS_FOLDER'], f"{part.brand}_{part.model_name}_ {part.component_type}")
@@ -299,7 +302,7 @@ def updatebicyclepart(bicycle_part_id):
                 pdf_file.save(file_path)
 
                 new_pdf = PartPdfs(part_pdf = file_path, part=part)
-                db.session(new_pdf)
+                db.session.add(new_pdf)
         
         part.brand = new_brand
         part.model_name = new_model_name
@@ -318,14 +321,14 @@ def deletebicyclepart(part_id):
     if part is None:
         return jsonify({"message": "Part was not found"}), 404
     
-    current_folder = os.path.join(app.config['PARTS_FOLDER'], f"{part.brand}_{part.model_name}_ {part.component_type}")
+    current_folder = os.path.join(app.config['PARTS_FOLDER'], f"{part.brand}_{part.model_name}_{part.component_type}")
 
     try:
         db.session.delete(part)
         db.session.commit()
         if os.path.exists(current_folder):
             shutil.rmtree(current_folder)
-        return jsonify({"message": "Part and Folder was deleted successsfyly"}), 200
+        return jsonify({"message": "Part and Folder was deleted successfuly"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Part deletion error: {str(e)}"}), 500
