@@ -32,7 +32,7 @@ class BicycleParts(db.Model):
     brand = db.Column(db.String(255), index=True, unique= False)
     model_name = db.Column(db.String(255), index=True, unique = False)
     component_type = db.Column(db.String(100), index=True, unique=False)
-    parts_pdfs = db.relationship('PartPdfs', backref='part', lazy='dynamic')
+    part_pdfs = db.relationship('PartPdfs', backref='part', lazy='dynamic')
 
     def to_json(self):
         return {
@@ -40,7 +40,7 @@ class BicycleParts(db.Model):
             "brand": self.brand,
             "model_name": self.model_name,
             "component_type": self.component_type,
-            "parts_pdfs": [pdf.part_pdf for pdf in self.parts_pdfs]
+            "part_pdfs": [pdf.part_pdf for pdf in self.part_pdfs]
         }
 
 class PartPdfs(db.Model):

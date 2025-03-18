@@ -201,13 +201,13 @@ def listParts():
     except Exception as e:
         return jsonify({"message": f"error in printing the bicycles parts {str(e)}"}),500
 
-@app.route("/addbicycleparts", methods=["POST"])
+@app.route("/addbicyclepart", methods=["POST"])
 def addBicycleParts():
     data = request.form
     brand = data.get("brand")
     model_name = data.get("model_name")
     component_type = data.get("component_type")
-    part_pdfs = request.files.getlist("parts_pdf")
+    part_pdfs = request.files.getlist("part_pdf")
 
     existing_part = BicycleParts.query.filter_by(brand=brand,model_name=model_name, component_type = component_type ).first()
     if existing_part:
@@ -257,8 +257,8 @@ def addBicycleParts():
         "message": f"Bicycle part {new_part.id} has been added"}), 201
 
 @app.route ("/editbicyclepart/<int:id>", methods=["PATCH"])
-def updatebicyclepart(bicycle_part_id):
-    part = BicycleParts.query.get(bicycle_part_id)
+def updatebicyclepart(id):
+    part = BicycleParts.query.get(id)
     
     if not part:
         return jsonify({"message": "Part not found"}), 404
@@ -278,13 +278,13 @@ def updatebicyclepart(bicycle_part_id):
 
             os.makedirs(new_folder, exist_ok=True)
 
-            for pdf in part.parts_pdf:
-                old_path = pdf.parts_pdf
+            for pdf in part.part_pdfs:
+                old_path = pdf.part_pdf
                 if os.path.exists(old_path):
                     filename = os.path.basename(old_path)
                     new_path = os.path.join(new_folder, filename)
                     os.rename(old_path, new_path)
-                    pdf.parts_pdf = new_path
+                    pdf.part_pdf = new_path
             
             if os.path.exists(old_folder) and not os.listdir(old_folder):
                 os.rmdir(old_folder)
@@ -314,9 +314,9 @@ def updatebicyclepart(bicycle_part_id):
         db.session.rollback()
         return jsonify({"message": f"Update failed: {str(e)}"}), 500
 
-@app.route("/deletepart/<part_id>", methods=["DELETE", 'OPTIONS'])
-def deletebicyclepart(part_id):
-    part = BicycleParts.query.get(part_id)
+@app.route("/deletebicyclepart/<int:id>", methods=["DELETE", 'OPTIONS'])
+def deletebicyclepart(id):
+    part = BicycleParts.query.get(id)
 
     if part is None:
         return jsonify({"message": "Part was not found"}), 404
