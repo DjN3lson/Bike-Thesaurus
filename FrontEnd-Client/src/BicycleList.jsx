@@ -4,11 +4,12 @@ import PdfViewer from "./FileViewer";
 
 
 const BicycleList = ({ bicycles }) => {
-    
+
     const [window, setWindow] = useState(false)
     const [selectBicyclePdf, setSelectedBicyclePdf] = useState(null)
-    
-    
+    const [dropdownVisible, setDropdownVisible] = usetState(false)
+
+
     const openModal = (bicycle_pdf) => {
         setSelectedBicyclePdf(bicycle_pdf)
         setWindow(true);
@@ -17,14 +18,39 @@ const BicycleList = ({ bicycles }) => {
         setSelectedBicyclePdf(null)
         setWindow(false)
     }
+
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible)
+    }
     return <div>
         <table>
             <thead>
                 <tr>
-                    <th>Bicycle PDF</th>
+                    <th>
+                        <span onClick={toggleDropdown} style={{ cursor: 'pointer' }}>Bicycle PDF</span>
+                        {dropdownVisible && (
+                            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                                {bicycles.map((bicycle) => (
+                                    <li key={bicycle.id}>
+                                        <a href="#" onClick={(e) => {
+                                            e.preventDefault();
+                                            openModal(bicycle.bicycle_pdf);
+                                        }}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                color: "black",
+                                                textDecoration: 'none'
+                                            }}
+                                        >{bicycle.bicycle_pdf.split(/[/\\]/).pop()}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </th>
                     <th>Brand</th>
                     <th>Model</th>
-                    <th>Model_id</th>
 
                 </tr>
             </thead>
@@ -33,7 +59,7 @@ const BicycleList = ({ bicycles }) => {
                     <tr key={bicycle.id}>
                         <td>
                             <a
-                            href="#"
+                                href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     openModal(bicycle.bicycle_pdf)
@@ -53,7 +79,6 @@ const BicycleList = ({ bicycles }) => {
                         </td>
                         <td>{bicycle.brand}</td>
                         <td>{bicycle.model}</td>
-                        <td>{bicycle.model_id}</td>
 
                     </tr>
                 ))}

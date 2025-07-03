@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 const EditForm = ({closeModal, bicycle = {}}) => {
     const [brand, setBrand] = useState(bicycle.brand || "");
     const [model, setModel] = useState(bicycle.model || "");
-    const [model_id, setModel_id] = useState(bicycle.model_id || "");
     const [bicycle_pdf, setBicycle_pdf] = useState(bicycle.bicycle_pdf || "");
     const allowedExtensions = ['pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'];
 
@@ -20,7 +19,6 @@ const EditForm = ({closeModal, bicycle = {}}) => {
     useEffect(() => {
         setBrand(bicycle.brand || "")
         setModel(bicycle.model || "")
-        setModel_id(bicycle.model_id || "")
         setBicycle_pdf(bicycle.bicycle_pdf || "")
     }, [bicycle]);
 
@@ -29,7 +27,6 @@ const EditForm = ({closeModal, bicycle = {}}) => {
         const formData = new FormData();
         formData.append('brand', brand)
         formData.append('model', model)
-        formData.append('model_id', model_id)
         if(bicycle_pdf){
             formData.append('bicycle_pdf', bicycle_pdf)
         }else{
@@ -70,10 +67,6 @@ const EditForm = ({closeModal, bicycle = {}}) => {
                 <div>
                     <label>Model: </label>
                     <input type="text" name="model" id="model" value={model} onChange={(e) => setModel(e.target.value)} />
-                </div>
-                <div>
-                    <label>Model Id</label>
-                    <input type="text" name="model_id" id="model_id" value={model_id} onChange={(e) => setModel_id(e.target.value)} />
                 </div>
                 <div>
                     <label>Upload PDF: </label>

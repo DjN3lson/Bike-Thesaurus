@@ -11,7 +11,6 @@ function Manage() {
     const [bicycles, setBicycles] = useState([]);
     const [brand, setBrand] = useState();
     const [model, setModel] = useState("");
-    const [model_id, setModel_id] = useState();
     const [bicycle_pdf, setBicycle_pdf] = useState("");
 
     const [addFormOpen, setAddFormOpen] = useState(false)
@@ -61,7 +60,6 @@ function Manage() {
                                 <th>PDF</th>
                                 <th>Brand</th>
                                 <th>Model</th>
-                                <th>Model ID</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -72,7 +70,6 @@ function Manage() {
                                     <td>{bicycle.bicycle_pdf.split(/[/\\]/).pop()}</td>
                                     <td>{bicycle.brand}</td>
                                     <td>{bicycle.model}</td>
-                                    <td>{bicycle.model_id}</td>
                                     <td>
                                         <button onClick={() => openEditForm(bicycle)}>Edit</button>
                                         <button onClick={() => deleteBicycle(bicycle)}>Delete</button>

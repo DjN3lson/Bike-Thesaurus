@@ -6,7 +6,6 @@ import "./css/addform.css"
 const AddForm = ({ closeModal }) => {
     const [brand, setBrand] = useState("");
     const [model, setModel] = useState("");
-    const [model_id, setModel_id] = useState("");
     const [bicycle_pdf, setBicycle_pdf] = useState("");
     const allowedExtensions = ['pdf', 'png', 'doc', 'jpg', 'docx', 'txt', 'jpeg'];
 
@@ -24,7 +23,6 @@ const AddForm = ({ closeModal }) => {
         const formData = new FormData();
         formData.append('brand', brand)
         formData.append('model', model)
-        formData.append('model_id', model_id)
         formData.append('bicycle_pdf', bicycle_pdf)
         const url = "http://localhost:5000/addbicycle";
         const options = {
@@ -71,10 +69,6 @@ const AddForm = ({ closeModal }) => {
                 <div>
                     <label>Model:* </label>
                     <input type="text" name="model" id="model" value={model} onChange={(e) => setModel(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Model Id</label>
-                    <input type="text" name="model_id" id="model_id" value={model_id} onChange={(e) => setModel_id(e.target.value)} />
                 </div>
                 <div>
                     <label>Upload PDF:* </label>
