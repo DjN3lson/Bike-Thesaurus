@@ -7,7 +7,7 @@ const BicycleList = ({ bicycles }) => {
 
     const [window, setWindow] = useState(false)
     const [selectBicyclePdf, setSelectedBicyclePdf] = useState(null)
-    const [dropdownVisible, setDropdownVisible] = usetState(false)
+    const [dropdownVisible, setDropdownVisible] = useState({})
 
 
     const openModal = (bicycle_pdf) => {
@@ -19,75 +19,71 @@ const BicycleList = ({ bicycles }) => {
         setWindow(false)
     }
 
-    const toggleDropdown = () => {
-        setDropdownVisible(!dropdownVisible)
+    const toggleDropdown = (bicycleId) => {
+        setDropdownVisible((prevState) => ({
+            ...prevState,
+            [bicycleId]: !prevState[bicycleId],
+        }))
     }
-    return <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>
-                        <span onClick={toggleDropdown} style={{ cursor: 'pointer' }}>Bicycle PDF</span>
-                        {dropdownVisible && (
-                            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                {bicycles.map((bicycle) => (
-                                    <li key={bicycle.id}>
-                                        <a href="#" onClick={(e) => {
-                                            e.preventDefault();
-                                            openModal(bicycle.bicycle_pdf);
-                                        }}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{
-                                                color: "black",
-                                                textDecoration: 'none'
-                                            }}
-                                        >{bicycle.bicycle_pdf.split(/[/\\]/).pop()}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </th>
-                    <th>Brand</th>
-                    <th>Model</th>
 
-                </tr>
-            </thead>
-            <tbody>
-                {bicycles.map((bicycle) => (
-                    <tr key={bicycle.id}>
-                        <td>
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    openModal(bicycle.bicycle_pdf)
-                                }}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    color: 'black', // Set font color to black
-                                    cursor: 'pointer', // Change cursor to pointer
-                                    textDecoration: 'none' // Remove default underline
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                                onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
-                            >
-                                {bicycle.bicycle_pdf.split(/[/\\]/).pop()}
-                            </a>
-                        </td>
-                        <td>{bicycle.brand}</td>
-                        <td>{bicycle.model}</td>
-
+    return (
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bicycle PDFs</th>
+                        <th>Brand</th>
+                        <th>Model</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
-        {window && selectBicyclePdf && (
-            <PdfViewer closeModal={closeModal} bicycle_pdf={selectBicyclePdf} />
-        )}
-    </div>
-}
+                </thead>
+                <tbody>
+                    {bicycles.map((bicycle) => (
+                        <tr key={bicycle.id}>
+                            <td>
+                                <span
+                                    onClick={() => toggleDropdown(bicycle.id)}
+                                    style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}
+                                >
+                                    View PDFs
+                                </span>
+                                {dropdownVisible[bicycle.id] && (
+                                    <ul style={{ listStyleType: "none", padding: 0, marginTop: "10px" }}>
+                                        {bicycle.pdfs && bicycle.pdfs.length > 0 ? (
+                                            bicycle.pdfs.map((pdf, index) => (
+                                                <li key={index}>
+                                                    <a
+                                                        href={`http://127.0.0.1:5000/${pdf}`} // Adjust the URL to match your backend
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            color: "black",
+                                                            textDecoration: "none",
+                                                            cursor: "pointer",
+                                                        }}
+                                                        onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                                                        onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
+                                                    >
+                                                        {pdf.split(/[/\\]/).pop()} {/* Extract the file name */}
+                                                    </a>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <li>No PDFs Available</li>
+                                        )}
+                                    </ul>
+                                )}
+                            </td>
+                            <td>{bicycle.brand}</td>
+                            <td>{bicycle.model}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {window && selectBicyclePdf && (
+                <PdfViewer closeModal={closeModal} bicycle_pdf={selectBicyclePdf} />
+            )}
+        </div>
+    );
+};
 
 export default BicycleList;
