@@ -52,7 +52,7 @@ const BicycleList = ({ bicycles }) => {
                                             bicycle.pdfs.map((pdf, index) => (
                                                 <li key={index}>
                                                     <a
-                                                        href={`http://127.0.0.1:5000/${pdf}`} // Adjust the URL to match your backend
+                                                        href={`http://127.0.0.1:5000/uploads/${pdf}`} // Adjust the URL to match your backend
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         style={{
@@ -65,6 +65,7 @@ const BicycleList = ({ bicycles }) => {
                                                     >
                                                         {pdf.split(/[/\\]/).pop()} {/* Extract the file name */}
                                                     </a>
+                                                    {/* Hacer un mensaje de error si no hay pdf */}
                                                 </li>
                                             ))
                                         ) : (

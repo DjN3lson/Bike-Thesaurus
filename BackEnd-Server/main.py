@@ -54,7 +54,7 @@ def listbicycles():
 
 @app.route("/uploads/<path:filename>")
 def serve_pdf(filename):
-    return send_from_directory('uploads', filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route("/addbicycle", methods=["POST"])
@@ -97,8 +97,11 @@ def addbicycles():
             file_path = os.path.join(bicycle_folder, filename)
             pdf_file.save(file_path)
 
+            #Save the relative path
+            relative_path = os.path.relpath(file_path, app.config['UPLOAD_FOLDER'])
+
             # Associate PDF with the new bicycle
-            new_pdf = BicyclePdfs(bicycle_pdf=file_path, bicycle=new_bicycle)
+            new_pdf = BicyclePdfs(bicycle_pdf=relative_path, bicycle=new_bicycle)
             bicycle_pdf_instances.append(new_pdf)
 
         
@@ -240,7 +243,9 @@ def addBicycleParts():
             file_path = os.path.join(part_folder, filename)
             pdf_file.save(file_path)
 
-            new_pdf = PartPdfs(part_pdf=file_path, part = new_part)
+            relative_path = os.path.relpath(file_path, app.config['UPLOAD_FOLDER'])
+
+            new_pdf = PartPdfs(part_pdf=relative_path, part = new_part)
             parts_pdf_instances.append(new_pdf)
 
 
