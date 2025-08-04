@@ -24,7 +24,7 @@ const EditForm = ({ closeModal, bicycle = {} }) => {
 
         try {
             await axios.delete(`http://localhost:5000/delete_bicycle_pdf/${pdfId}`);
-            setPDFs(prev => prev.filter(pdf = pdf.id !== pdfId));
+            setPDFs(prev => prev.filter(pdf => pdf.id !== pdfId));
         } catch (err) {
             alert("Error deleting PDF");
             console.error(err);
