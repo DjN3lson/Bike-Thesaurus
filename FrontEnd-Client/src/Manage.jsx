@@ -44,6 +44,18 @@ function Manage() {
         }
     };
 
+    const deleteBicycle = async (bicycle) => {
+        if (window.confirm(`Are you sure you want to delete ${bicycle.brand} ${bicycle.model}?`)){
+            try {
+                await axios.delete(`http://localhost:5000/deletebicycle/${bicycle.id}`);
+                fetchBicycles();
+            } catch (error) {
+                console.error("Error deleting bicycle", error);
+                alert("Error deleting bicycle")
+            }
+        }
+    };
+
     useEffect(() => {
         fetchBicycles();
     }, [])
@@ -67,7 +79,15 @@ function Manage() {
                             {bicycles.map((bicycle) => (
                                 <tr key={bicycle.id}>
                                     <td>{bicycle.id}</td>
-                                    <td>{bicycle.bicycle_pdf.split(/[/\\]/).pop()}</td>
+                                    <td>
+                                        {bicycle.pdfs && bicycle.pdfs.length > 0
+                                            ? bicycle.pdfs.map((pdf, index) => (
+                                                <div key={index}>
+                                                    {pdf.bicycle_pdf.split(/[/\\]/).pop()}
+                                                </div>
+                                            ))
+                                            : "No PDFs"}
+                                    </td>
                                     <td>{bicycle.brand}</td>
                                     <td>{bicycle.model}</td>
                                     <td>

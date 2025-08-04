@@ -63,9 +63,8 @@ const BicycleList = ({ bicycles }) => {
                                                         onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
                                                         onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
                                                     >
-                                                        {pdf.split(/[/\\]/).pop()} {/* Extract the file name */}
+                                                        {pdf.bicycle_pdf.split(/[/\\]/).pop()} {/* Extract the file name */}
                                                     </a>
-                                                    {/* Hacer un mensaje de error si no hay pdf */}
                                                 </li>
                                             ))
                                         ) : (

@@ -160,7 +160,8 @@ def updatebicycle(bicycle_id):
                 file_path = os.path.join(current_folder, filename)
                 pdf_file.save(file_path)
 
-                new_pdf = BicyclePdfs(bicycle_pdf=file_path, bicycle=bicycle)
+                relative_path = os.path.relpath(file_path, app.config['UPLOAD_FOLDER'])
+                new_pdf = BicyclePdfs(bicycle_pdf=relative_path, bicycle=bicycle)
                 db.session.add(new_pdf)
         
         bicycle.brand = new_brand
@@ -194,6 +195,21 @@ def deletebicycle(bicycle_id):
         db.session.rollback()
         return jsonify({"message": f"Bicycle deletion error: {str(e)}"}), 500
    
+@app.route("/delete_bicycle_pdf/<int:pdf_id>", methods=["DELETE", "OPTIONS"])
+def delete_bicycle_pdf(pdf_id):
+    pdf = BicyclePdfs.query.get(pdf_id)
+
+    if pdf is None:
+            return jsonify({"message": "PDF was not found"}), 404
+    
+    abs_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf.bicycle_pdf)
+    if os.path.exists(abs_path):
+        os.remove(abs_path)
+    
+    db.session.delete(pdf)
+    db.session.commit()
+    return jsonify({"message": "PDF was deleted successfully"}), 200
+
 
 @app.route("/bicyclepartslist", methods=["GET"])
 def listParts():
